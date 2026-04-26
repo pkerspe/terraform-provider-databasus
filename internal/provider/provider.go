@@ -4,9 +4,7 @@
 package provider
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -14,6 +12,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/pkerspe/terraform-provider-databasus/internal/client"
+	"github.com/pkerspe/terraform-provider-databasus/internal/provider/datasources"
+	"github.com/pkerspe/terraform-provider-databasus/internal/provider/resources"
 )
 
 // Ensure DatabasusProvider satisfies various provider interfaces.
@@ -58,32 +59,6 @@ func (p *DatabasusProvider) Schema(ctx context.Context, req provider.SchemaReque
 	}
 }
 
-func getJWT(baseURL, email, password string) (string, error) {
-	body := map[string]string{
-		"email":    email,
-		"password": password,
-	}
-
-	b, _ := json.Marshal(body)
-
-	resp, err := http.Post(baseURL+"/users/signin", "application/json", bytes.NewBuffer(b))
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	var result struct {
-		Token  string `json:"token"`
-		UserId string `json:"userId"`
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return "", err
-	}
-
-	return result.Token, nil
-}
-
 func (p *DatabasusProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 	var config DatabasusProviderModel
 
@@ -94,7 +69,7 @@ func (p *DatabasusProvider) Configure(ctx context.Context, req provider.Configur
 	}
 
 	// get token from Databasus for API calls
-	token, err := getJWT(config.BaseUrl.ValueString(), config.Email.ValueString(), config.Password.ValueString())
+	token, err := client.GetJWT(config.BaseUrl.ValueString(), config.Email.ValueString(), config.Password.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to authenticate against Databasus REST API",
@@ -103,7 +78,7 @@ func (p *DatabasusProvider) Configure(ctx context.Context, req provider.Configur
 		return
 	}
 
-	client := &Client{
+	client := &client.DatabasusClient{
 		BaseURL: config.BaseUrl.ValueString(),
 		Token:   token,
 		HTTP:    &http.Client{},
@@ -115,14 +90,14 @@ func (p *DatabasusProvider) Configure(ctx context.Context, req provider.Configur
 
 func (p *DatabasusProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewWorkspaceResource,
+		resources.NewWorkspaceResource,
 	}
 }
 
 func (p *DatabasusProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewWorkspaceDataSource,
-		NewAllWorkspacesDataSource,
+		datasources.NewWorkspaceDataSource,
+		datasources.NewAllWorkspacesDataSource,
 	}
 }
 

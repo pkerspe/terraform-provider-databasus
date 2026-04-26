@@ -1,12 +1,11 @@
 // Copyright kerspep
 // SPDX-License-Identifier: MPL-2.0
 
-package provider
+package resources
 
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -15,6 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"github.com/pkerspe/terraform-provider-databasus/internal/client"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -27,7 +27,7 @@ func NewWorkspaceResource() resource.Resource {
 
 // WorkspaceResource defines the resource implementation.
 type WorkspaceResource struct {
-	client *http.Client
+	client *client.DatabasusClient
 }
 
 // WorkspaceResourceModel describes the resource data model.
@@ -67,12 +67,12 @@ func (r *WorkspaceResource) Configure(ctx context.Context, req resource.Configur
 		return
 	}
 
-	client, ok := req.ProviderData.(*http.Client)
+	client, ok := req.ProviderData.(*client.DatabasusClient)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *client.DatabasusClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return

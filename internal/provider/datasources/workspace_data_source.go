@@ -1,7 +1,7 @@
 // Copyright kerspep
 // SPDX-License-Identifier: MPL-2.0
 
-package provider
+package datasources
 
 import (
 	"context"

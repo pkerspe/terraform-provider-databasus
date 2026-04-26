@@ -1,7 +1,7 @@
 // Copyright (c) KerspeP
 // SPDX-License-Identifier: Apache-2.0
 
-package provider
+package datasources
 
 import (
 	"context"

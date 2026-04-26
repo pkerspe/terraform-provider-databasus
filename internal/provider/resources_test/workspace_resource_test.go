@@ -1,7 +1,7 @@
 // Copyright kerspep
 // SPDX-License-Identifier: MPL-2.0
 
-package provider
+package resources_test
 
 import (
 	"fmt"
@@ -11,24 +11,25 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
 	"github.com/hashicorp/terraform-plugin-testing/statecheck"
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
+	"github.com/pkerspe/terraform-provider-databasus/internal/provider"
 )
 
-func TestAccExampleResource(t *testing.T) {
+func TestAccWorkspaceResource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { provider.TestAccPreCheck(t) },
+		ProtoV6ProviderFactories: provider.TestAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccExampleResourceConfig("one"),
+				Config: testAccWorkspaceResourceConfig("one"),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(
-						"workspace.test",
+						"databasus_workspace.test",
 						tfjsonpath.New("id"),
 						knownvalue.StringExact("example-id"),
 					),
 					statecheck.ExpectKnownValue(
-						"workspace.test",
+						"databasus_workspace.test",
 						tfjsonpath.New("name"),
 						knownvalue.StringExact("one"),
 					),
@@ -36,7 +37,7 @@ func TestAccExampleResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "workspace.test",
+				ResourceName:      "databasus_workspace.test",
 				ImportState:       true,
 				ImportStateVerify: true,
 				// This is not normally necessary, but is here because this
@@ -47,15 +48,15 @@ func TestAccExampleResource(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccExampleResourceConfig("two"),
+				Config: testAccWorkspaceResourceConfig("two"),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(
-						"workspace.test",
+						"databasus_workspace.test",
 						tfjsonpath.New("id"),
 						knownvalue.StringExact("example-id"),
 					),
 					statecheck.ExpectKnownValue(
-						"workspace.test",
+						"databasus_workspace.test",
 						tfjsonpath.New("name"),
 						knownvalue.StringExact("two"),
 					),
@@ -66,9 +67,9 @@ func TestAccExampleResource(t *testing.T) {
 	})
 }
 
-func testAccExampleResourceConfig(name string) string {
+func testAccWorkspaceResourceConfig(name string) string {
 	return fmt.Sprintf(`
-resource "workspace" "test" {
+resource "databasus_workspace" "test" {
   name = %[1]q
 }
 `, name)

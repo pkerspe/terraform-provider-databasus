@@ -1,7 +1,7 @@
 // Copyright kerspep
 // SPDX-License-Identifier: MPL-2.0
 
-package provider
+package datasources_test
 
 import (
 	"testing"
@@ -10,19 +10,20 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
 	"github.com/hashicorp/terraform-plugin-testing/statecheck"
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
+	"github.com/pkerspe/terraform-provider-databasus/internal/provider"
 )
 
-func TestAccExampleDataSource(t *testing.T) {
+func TestAccWorkspaceDataSource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		PreCheck:                 func() { provider.TestAccPreCheck(t) },
+		ProtoV6ProviderFactories: provider.TestAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Read testing
 			{
-				Config: testAccExampleDataSourceConfig,
+				Config: testAccWorkspaceDataSourceConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(
-						"data.workspace.test",
+						"data.databasus_workspace.test",
 						tfjsonpath.New("id"),
 						knownvalue.StringExact("example-id"),
 					),
@@ -32,8 +33,8 @@ func TestAccExampleDataSource(t *testing.T) {
 	})
 }
 
-const testAccExampleDataSourceConfig = `
-data "workspace" "test" {
+const testAccWorkspaceDataSourceConfig = `
+data "databasus_workspace" "test" {
   id = "example-id"
 }
 `
