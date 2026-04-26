@@ -77,7 +77,9 @@ func getJWT(baseURL, email, password string) (string, error) {
 		UserId string `json:"userId"`
 	}
 
-	json.NewDecoder(resp.Body).Decode(&result)
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", err
+	}
 
 	return result.Token, nil
 }
