@@ -30,7 +30,7 @@ func main() {
 	opts := providerserver.ServeOpts{
 		// Also update the tfplugindocs generate command to either remove the
 		// -provider-name flag or set its value to the updated provider name.
-		Address: "registry.terraform.io/kerspep/databasus",
+		Address: "registry.terraform.io/pkerspe/databasus",
 		Debug:   debug,
 	}
 
