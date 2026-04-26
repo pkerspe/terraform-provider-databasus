@@ -2,7 +2,7 @@ schema_version = 1
 
 project {
   license           = "Apache-2.0"
-  copyright_holder  = "KerspeP"
+  copyright_holder  = "pkerspe"
   copyright_year    = 2026
   
 
