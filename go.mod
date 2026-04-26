@@ -1,4 +1,4 @@
-module github.com/hashicorp/terraform-provider-databasus
+module github.com/kerspep/terraform-provider-databasus
 
 go 1.25.5
 

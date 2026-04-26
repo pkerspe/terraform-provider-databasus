@@ -9,7 +9,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/hashicorp/terraform-provider-databasus/internal/provider"
+	"github.com/kerspep/terraform-provider-databasus/internal/provider"
 )
 
 var (
