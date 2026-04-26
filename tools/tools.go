@@ -1,6 +1,3 @@
-// Copyright kerspep
-// SPDX-License-Identifier: MPL-2.0
-
 //go:build generate
 
 package tools

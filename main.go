@@ -1,5 +1,5 @@
-// Copyright (c) KerspeP
-// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) pkerspe
+// SPDX-License-Identifier: Apache-2.0
 
 package main
 
