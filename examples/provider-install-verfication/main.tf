@@ -27,10 +27,23 @@ data "databasus_workspace" "existing_workspace" {
   id = "c3c57774-920e-4c01-bafd-e27b3b51a0d7"
 }
 
+data "databasus_users_settings" "current_settings" {
+}
+
+resource "databasus_users_settings" "new_settings" {
+  allow_external_registrations        = false
+  allow_member_invitations            = false
+  member_allowed_to_create_workspaces = false
+}
+
 output "all_workspaces" {
   value = data.databasus_all_workspaces.existing_workspaces
 }
 
 output "workspace" {
   value = data.databasus_workspace.existing_workspace
+}
+
+output "settings" {
+  value = data.databasus_users_settings.current_settings
 }

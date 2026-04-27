@@ -1,6 +1,3 @@
-// Copyright (c) KerspeP
-// SPDX-License-Identifier: Apache-2.0
-
 package client
 
 import (
@@ -49,22 +46,6 @@ func NewDatabasusClient(baseURL, token string) *DatabasusClient {
 		Token:   token,
 		HTTP:    client,
 	}
-}
-
-type WorkspaceResponseModel struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	CreatedAt string `json:"createdAt"`
-}
-
-type WorkspacesListResponse struct {
-	Items []WorkspaceResponseModel `json:"workspaces"`
-}
-
-type WorkspaceDataSourceModel struct {
-	CreatedAt types.String `tfsdk:"created_at"`
-	Name      types.String `tfsdk:"name"`
-	Id        types.String `tfsdk:"id"`
 }
 
 func GetJWT(baseURL, email, password string) (string, error) {
@@ -123,6 +104,44 @@ func (c *DatabasusClient) doRequest(ctx context.Context, method, path string, bo
 	return nil
 }
 
+/*******************************************************
+*								WORKSPACE CRUD functions
+********************************************************/
+
+type WorkspaceResponseModel struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"createdAt"`
+}
+
+type WorkspacesListResponse struct {
+	Items []WorkspaceResponseModel `json:"workspaces"`
+}
+
+type WorkspaceDataSourceModel struct {
+	CreatedAt types.String `tfsdk:"created_at"`
+	Name      types.String `tfsdk:"name"`
+	Id        types.String `tfsdk:"id"`
+}
+
+// Create a new Workspace in Databasus for the given name
+func (c *DatabasusClient) CreateWorkspace(ctx context.Context, name string) (*WorkspaceResponseModel, error) {
+	var result WorkspaceResponseModel
+
+	body := map[string]string{
+		"name": name,
+	}
+
+	b, _ := json.Marshal(body)
+
+	err := c.doRequest(ctx, "POST", "/workspaces", bytes.NewBuffer(b), &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
 func (c *DatabasusClient) GetWorkspace(ctx context.Context, id string) (*WorkspaceResponseModel, error) {
 	var result WorkspaceResponseModel
 
@@ -145,8 +164,8 @@ func (c *DatabasusClient) ListWorkspaces(ctx context.Context) (*WorkspacesListRe
 	return &result, nil
 }
 
-// Create a new Workspace in Databasus for the given name
-func (c *DatabasusClient) CreateWorkspace(ctx context.Context, name string) (*WorkspaceResponseModel, error) {
+// Update an Existing Workspace from Databasus for a given id
+func (c *DatabasusClient) UpdateWorkspace(ctx context.Context, id string, name string) (*WorkspaceResponseModel, error) {
 	var result WorkspaceResponseModel
 
 	body := map[string]string{
@@ -154,8 +173,7 @@ func (c *DatabasusClient) CreateWorkspace(ctx context.Context, name string) (*Wo
 	}
 
 	b, _ := json.Marshal(body)
-
-	err := c.doRequest(ctx, "POST", "/workspaces", bytes.NewBuffer(b), &result)
+	err := c.doRequest(ctx, "PUT", "/workspaces/"+id, bytes.NewBuffer(b), &result)
 	if err != nil {
 		return nil, err
 	}
@@ -175,19 +193,76 @@ func (c *DatabasusClient) DeleteWorkspace(ctx context.Context, id string) error 
 	return nil
 }
 
-// Update an Existing Workspace from Databasus for a given id
-func (c *DatabasusClient) UpdateWorkspace(ctx context.Context, id string, name string) (*WorkspaceResponseModel, error) {
-	var result WorkspaceResponseModel
+/*******************************************************
+*								SETTINGS CRUD functions
+********************************************************/
 
-	body := map[string]string{
-		"name": name,
+type SettingsResponseModel struct {
+	ID                                string `json:"id"`
+	IsAllowExternalRegistrations      bool   `json:"isAllowExternalRegistrations"`
+	IsAllowMemberInvitations          bool   `json:"isAllowMemberInvitations"`
+	IsMemberAllowedToCreateWorkspaces bool   `json:"isMemberAllowedToCreateWorkspaces"`
+}
+
+type SettingsDataSourceModel struct {
+	Id                                types.String `tfsdk:"id"`
+	IsAllowExternalRegistrations      types.Bool   `tfsdk:"allow_external_registrations"`
+	IsAllowMemberInvitations          types.Bool   `tfsdk:"allow_member_invitations"`
+	IsMemberAllowedToCreateWorkspaces types.Bool   `tfsdk:"member_allowed_to_create_workspaces"`
+}
+
+type SettingsResourceModel struct {
+	Id                                types.String `tfsdk:"id"`
+	IsAllowExternalRegistrations      types.Bool   `tfsdk:"allow_external_registrations"`
+	IsAllowMemberInvitations          types.Bool   `tfsdk:"allow_member_invitations"`
+	IsMemberAllowedToCreateWorkspaces types.Bool   `tfsdk:"member_allowed_to_create_workspaces"`
+}
+
+// settings always exist, so the create just internally calls the update
+func (c *DatabasusClient) CreateUsersSettings(ctx context.Context, allowExternalRegistrations bool, allowMemberInvitations bool, memberAllowedToCreateWorkspaces bool) (*SettingsResponseModel, error) {
+	currentSettings, err := c.GetUsersSettings(ctx)
+	if err != nil {
+		return nil, err
 	}
 
-	b, _ := json.Marshal(body)
-	err := c.doRequest(ctx, "PUT", "/workspaces/"+id, bytes.NewBuffer(b), &result)
+	return c.UpdateUsersSettings(ctx, currentSettings.ID, allowExternalRegistrations, allowMemberInvitations, memberAllowedToCreateWorkspaces)
+}
+
+func (c *DatabasusClient) GetUsersSettings(ctx context.Context) (*SettingsResponseModel, error) {
+	var result SettingsResponseModel
+
+	err := c.doRequest(ctx, "GET", "/users/settings", nil, &result)
 	if err != nil {
 		return nil, err
 	}
 
 	return &result, nil
+}
+
+func (c *DatabasusClient) UpdateUsersSettings(ctx context.Context, id string, allowExternalRegistrations bool, allowMemberInvitations bool, memberAllowedToCreateWorkspaces bool) (*SettingsResponseModel, error) {
+	var result SettingsResponseModel
+
+	body := map[string]any{
+		"isAllowExternalRegistrations":      allowExternalRegistrations,
+		"isAllowMemberInvitations":          allowMemberInvitations,
+		"isMemberAllowedToCreateWorkspaces": memberAllowedToCreateWorkspaces,
+	}
+
+	//id does not really seem to b needed, so we only send it if we have it already
+	if id != "" {
+		body["id"] = id
+	}
+
+	b, _ := json.Marshal(body)
+	err := c.doRequest(ctx, "PUT", "/users/settings", bytes.NewBuffer(b), &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+// Delete does not exist, so we just do nothing here
+func (c *DatabasusClient) DeleteUsersSettings(ctx context.Context, id string) error {
+	return nil
 }

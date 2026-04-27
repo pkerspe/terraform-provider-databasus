@@ -86,6 +86,7 @@ func (p *DatabasusProvider) Configure(ctx context.Context, req provider.Configur
 func (p *DatabasusProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		resources.NewWorkspaceResource,
+		resources.NewUsersSettingsResource,
 	}
 }
 
@@ -93,6 +94,7 @@ func (p *DatabasusProvider) DataSources(ctx context.Context) []func() datasource
 	return []func() datasource.DataSource{
 		datasources.NewWorkspaceDataSource,
 		datasources.NewAllWorkspacesDataSource,
+		datasources.NewUsersSettingsDataSource,
 	}
 }
 
