@@ -5,7 +5,6 @@ package provider
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -78,11 +77,7 @@ func (p *DatabasusProvider) Configure(ctx context.Context, req provider.Configur
 		return
 	}
 
-	client := &client.DatabasusClient{
-		BaseURL: config.BaseUrl.ValueString(),
-		Token:   token,
-		HTTP:    &http.Client{},
-	}
+	client := client.NewDatabasusClient(config.BaseUrl.ValueString(), token)
 
 	resp.DataSourceData = client
 	resp.ResourceData = client

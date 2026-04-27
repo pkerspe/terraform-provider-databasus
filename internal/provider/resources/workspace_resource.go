@@ -32,8 +32,9 @@ type WorkspaceResource struct {
 
 // WorkspaceResourceModel describes the resource data model.
 type WorkspaceResourceModel struct {
-	Name types.String `tfsdk:"name"`
-	Id   types.String `tfsdk:"id"`
+	Name      types.String `tfsdk:"name"`
+	Id        types.String `tfsdk:"id"`
+	CreatedAt types.String `tfsdk:"created_at"`
 }
 
 func (r *WorkspaceResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -49,6 +50,10 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 			"name": schema.StringAttribute{
 				MarkdownDescription: "The name of the workspace to be created",
 				Required:            true,
+			},
+			"created_at": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The timestamp when the workspace has been created",
 			},
 			"id": schema.StringAttribute{
 				Computed:            true,
@@ -82,34 +87,37 @@ func (r *WorkspaceResource) Configure(ctx context.Context, req resource.Configur
 }
 
 func (r *WorkspaceResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var data WorkspaceResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
+	// Retrieve values from plan
+	var plan WorkspaceResourceModel
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// If applicable, this is a great opportunity to initialize any necessary
-	// provider client data and make a call using it.
-	// httpResp, err := r.client.Do(httpReq)
-	// if err != nil {
-	//     resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create example, got error: %s", err))
-	//     return
-	// }
+	// Create new workspace
+	workspace, err := r.client.CreateWorkspace(ctx, plan.Name.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error creating workspace",
+			"Could not create workspace, unexpected error: "+err.Error(),
+		)
+		return
+	}
 
-	// For the purposes of this example code, hardcoding a response value to
-	// save into the Terraform state.
-	data.Id = types.StringValue("example-id")
-	data.Name = types.StringValue("workspace 1")
+	// save response values into the Terraform state.
+	plan.Id = types.StringValue(workspace.ID)
+	plan.Name = types.StringValue(workspace.Name)
+	plan.CreatedAt = types.StringValue(workspace.CreatedAt)
 
-	// Write logs using the tflog package
-	// Documentation: https://terraform.io/plugin/log
-	tflog.Trace(ctx, "created a resource")
+	tflog.Trace(ctx, "created new workspace resource")
 
-	// Save data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	// Set state to fully populated data
+	diags = resp.State.Set(ctx, plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
 
 func (r *WorkspaceResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -122,13 +130,16 @@ func (r *WorkspaceResource) Read(ctx context.Context, req resource.ReadRequest, 
 		return
 	}
 
-	// If applicable, this is a great opportunity to initialize any necessary
-	// provider client data and make a call using it.
-	// httpResp, err := r.client.Do(httpReq)
-	// if err != nil {
-	//     resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read example, got error: %s", err))
-	//     return
-	// }
+	result, err := r.client.GetWorkspace(ctx, data.Id.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError("API Error", err.Error())
+		return
+	}
+
+	// Map API → Terraform state
+	data.Id = types.StringValue(result.ID)
+	data.Name = types.StringValue(result.Name)
+	data.CreatedAt = types.StringValue(result.CreatedAt)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -144,35 +155,38 @@ func (r *WorkspaceResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	// If applicable, this is a great opportunity to initialize any necessary
-	// provider client data and make a call using it.
-	// httpResp, err := r.client.Do(httpReq)
-	// if err != nil {
-	//     resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update example, got error: %s", err))
-	//     return
-	// }
+	// Update existing workspace
+	workspace, err := r.client.UpdateWorkspace(ctx, data.Id.ValueString(), data.Name.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error updating workspace",
+			"Could not update workspace, unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	// Map API response to Terraform state
+	data.Id = types.StringValue(workspace.ID)
+	data.Name = types.StringValue(workspace.Name)
+	data.CreatedAt = types.StringValue(workspace.CreatedAt)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
 func (r *WorkspaceResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var data WorkspaceResourceModel
-
-	// Read Terraform prior state data into the model
-	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
+	var state WorkspaceResourceModel
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// If applicable, this is a great opportunity to initialize any necessary
-	// provider client data and make a call using it.
-	// httpResp, err := r.client.Do(httpReq)
-	// if err != nil {
-	//     resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete example, got error: %s", err))
-	//     return
-	// }
+	err := r.client.DeleteWorkspace(ctx, state.Id.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError("Error deleting Workspace", "Could not delete workspace, unexpected error: "+err.Error())
+		return
+	}
 }
 
 func (r *WorkspaceResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {

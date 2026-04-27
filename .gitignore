@@ -30,3 +30,7 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+docker_compose/databasus-data
+examples/**/terraform.tfstate
+examples/**/terraform.tfstate.*

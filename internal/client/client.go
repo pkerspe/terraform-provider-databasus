@@ -14,10 +14,41 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+// CustomRoundTripper is a custom implementation of http.RoundTripper
+// that adds the Authorization header with the JWT token.
+type CustomRoundTripper struct {
+	Transport http.RoundTripper
+	Token     string
+}
+
+// RoundTrip executes a single HTTP transaction and adds the Authorization header.
+func (c *CustomRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Add the Authorization header with the Bearer token
+	req.Header.Set("Authorization", "Bearer "+c.Token)
+
+	// Use the original transport to execute the request
+	return c.Transport.RoundTrip(req)
+}
+
 type DatabasusClient struct {
 	BaseURL string
 	Token   string
 	HTTP    *http.Client
+}
+
+func NewDatabasusClient(baseURL, token string) *DatabasusClient {
+	// Create a new HTTP client with the custom RoundTripper
+	client := &http.Client{
+		Transport: &CustomRoundTripper{
+			Transport: http.DefaultTransport, // Use the default transport
+			Token:     token,
+		},
+	}
+	return &DatabasusClient{
+		BaseURL: baseURL,
+		Token:   token,
+		HTTP:    client,
+	}
 }
 
 type WorkspaceResponseModel struct {
@@ -31,7 +62,7 @@ type WorkspacesListResponse struct {
 }
 
 type WorkspaceDataSourceModel struct {
-	CreatedAt types.String `tfsdk:"createdAt"`
+	CreatedAt types.String `tfsdk:"created_at"`
 	Name      types.String `tfsdk:"name"`
 	Id        types.String `tfsdk:"id"`
 }
@@ -107,6 +138,53 @@ func (c *DatabasusClient) ListWorkspaces(ctx context.Context) (*WorkspacesListRe
 	var result WorkspacesListResponse
 
 	err := c.doRequest(ctx, "GET", "/workspaces", nil, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+// Create a new Workspace in Databasus for the given name
+func (c *DatabasusClient) CreateWorkspace(ctx context.Context, name string) (*WorkspaceResponseModel, error) {
+	var result WorkspaceResponseModel
+
+	body := map[string]string{
+		"name": name,
+	}
+
+	b, _ := json.Marshal(body)
+
+	err := c.doRequest(ctx, "POST", "/workspaces", bytes.NewBuffer(b), &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+// Delete an Existing Workspace from Databasus for a given id
+func (c *DatabasusClient) DeleteWorkspace(ctx context.Context, id string) error {
+	var result WorkspaceResponseModel
+
+	err := c.doRequest(ctx, "DELETE", "/workspaces/"+id, nil, &result)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Update an Existing Workspace from Databasus for a given id
+func (c *DatabasusClient) UpdateWorkspace(ctx context.Context, id string, name string) (*WorkspaceResponseModel, error) {
+	var result WorkspaceResponseModel
+
+	body := map[string]string{
+		"name": name,
+	}
+
+	b, _ := json.Marshal(body)
+	err := c.doRequest(ctx, "PUT", "/workspaces/"+id, bytes.NewBuffer(b), &result)
 	if err != nil {
 		return nil, err
 	}

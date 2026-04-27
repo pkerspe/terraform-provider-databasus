@@ -1,0 +1,15 @@
+# Do not use this file in production or VPS. This file is intended for local development only. 
+services:
+  databasus:
+    container_name: databasus
+    image: databasus/databasus:latest
+    ports:
+      - "4005:4005"
+    env_file:
+      # defines the default admin password to set
+      - databasus_test.env
+    volumes:
+      - ./databasus-data:/databasus-data
+      - ./wrapper_set_admin_pwd.sh:/wrapper_set_admin_pwd.sh:ro
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/wrapper_set_admin_pwd.sh"]
