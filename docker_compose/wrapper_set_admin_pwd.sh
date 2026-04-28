@@ -1,4 +1,7 @@
 #!/bin/sh
+# Copyright (c) pkerspe
+# SPDX-License-Identifier: Apache-2.0
+
 
 GREEN="\033[0;32m"
 RED="\033[0;31m"

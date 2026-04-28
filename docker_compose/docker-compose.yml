@@ -1,3 +1,6 @@
+# Copyright (c) pkerspe
+# SPDX-License-Identifier: Apache-2.0
+
 # Do not use this file in production or VPS. This file is intended for local development only. 
 services:
   databasus:

@@ -21,4 +21,5 @@ Workspace resource
 
 ### Read-Only
 
+- `created_at` (String) The timestamp when the workspace has been created
 - `id` (String) The internal Id of the workspace
