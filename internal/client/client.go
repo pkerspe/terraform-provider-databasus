@@ -90,7 +90,7 @@ func GetJWT(baseURL, email, password string) (string, error) {
 	return result.Token, nil
 }
 
-func (c *DatabasusClient) doRequest(ctx context.Context, method, path string, body io.Reader, out interface{}) (error *ErrorDetails) {
+func (c *DatabasusClient) doRequest(ctx context.Context, method, path string, body io.Reader, out interface{}) *ErrorDetails {
 	var errorDetails ErrorDetails
 	url := c.BaseURL + path
 
@@ -394,7 +394,7 @@ func (c *DatabasusClient) CreateStorageS3(ctx context.Context, data StorageS3Res
 	return &result, nil
 }
 
-func (c *DatabasusClient) GetStorageS3(ctx context.Context, id string) (resultModel *StorageS3ResponseModel, error *ErrorDetails) {
+func (c *DatabasusClient) GetStorageS3(ctx context.Context, id string) (resultModel *StorageS3ResponseModel, errorD *ErrorDetails) {
 	var result StorageS3ResponseModel
 
 	err := c.doRequest(ctx, "GET", "/storages/"+id, nil, &result)
