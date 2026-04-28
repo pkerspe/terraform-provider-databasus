@@ -23,6 +23,7 @@ resource "databasus_workspace" "test" {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("databasus_workspace.test", "name", "test_workspace"),
 					resource.TestCheckResourceAttrSet("databasus_workspace.test", "id"),
+					// TODO: add more checks and also tests for resource update
 				),
 			},
 		},
