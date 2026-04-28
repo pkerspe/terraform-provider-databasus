@@ -57,6 +57,18 @@ jobs:
     name: 'Acceptance Tests: Terraform ${{ matrix.terraform }}'
     needs: build
     runs-on: ubuntu-latest
+
+    services:
+      databasus:
+        image: databasus/databasus:latest
+        ports:
+          - 4005:4005
+        options: >-
+          --health-cmd="curl -f http://localhost:4005 || exit 1"
+          --health-interval=5s
+          --health-timeout=2s
+          --health-retries=10
+
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -75,6 +87,15 @@ jobs:
         with:
           terraform_version: ${{ matrix.terraform }}
           terraform_wrapper: false
+      - name: Wait for service
+        run: |
+          for i in {1..20}; do
+            curl -s http://localhost:4005/health && exit 0
+            echo "Waiting for databasus service..."
+            sleep 3
+          done
+          echo "Service did not start in time"
+          exit 1
       - run: go mod download
       - run: terraform init
       - env:
