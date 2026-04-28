@@ -1,6 +1,3 @@
-// Copyright kerspep
-// SPDX-License-Identifier: MPL-2.0
-
 package provider
 
 import (
@@ -8,6 +5,20 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
+)
+
+const (
+	// providerConfig is a shared configuration to combine with the actual
+	// test configuration so the HashiCups client is properly configured.
+	// It is also possible to use the HASHICUPS_ environment variables instead,
+	// such as updating the Makefile and running the testing through that tool.
+	ProviderConfig = `
+provider "databasus" {
+  baseurl = "http://localhost:4005/api/v1"
+  email   = "admin"
+  password = "supersecret123"
+}
+`
 )
 
 // TestAccProtoV6ProviderFactories is used to instantiate a provider during acceptance testing.
