@@ -64,7 +64,7 @@ jobs:
         ports:
           - 4005:4005
         options: >-
-          --health-cmd="curl -f http://localhost:4005 || exit 1"
+          --health-cmd="curl -f http://localhost:4005/health || exit 1"
           --health-interval=5s
           --health-timeout=2s
           --health-retries=10
@@ -90,12 +90,17 @@ jobs:
       - name: Wait for service
         run: |
           for i in {1..20}; do
-            curl -s http://localhost:4005/health && exit 0
+            curl -s http://localhost:4005/healthh && exit 0
             echo "Waiting for databasus service..."
             sleep 3
           done
           echo "Service did not start in time"
           exit 1
+
+      - name: Set admin password in container
+        run: |
+          docker exec ${{ job.services.databasus.id }} \
+            ./main --new-password="supersecret123" --email="admin"
       - run: go mod download
       - run: terraform init
       - env:
