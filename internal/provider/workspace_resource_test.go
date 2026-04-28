@@ -22,9 +22,9 @@ resource "databasus_workspace" "test" {
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					// Verify number of coffees returned
-					resource.TestCheckResourceAttr("resource.databasus_workspace", "name", "test_workspace"),
+					resource.TestCheckResourceAttr("databasus_workspace.test", "name", "test_workspace"),
 
-					resource.TestCheckResourceAttrSet("resource.databasus_workspace", "id"),
+					resource.TestCheckResourceAttrSet("databasus_workspace.test", "id"),
 				),
 			},
 		},
