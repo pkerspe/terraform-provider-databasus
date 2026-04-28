@@ -21,4 +21,4 @@ Workspace resource
 
 ### Read-Only
 
-- `id` (String) The internal ID of the workspace
+- `id` (String) The internal Id of the workspace

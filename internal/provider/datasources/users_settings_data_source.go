@@ -33,7 +33,7 @@ func (d *UsersSettingsDataSource) Schema(ctx context.Context, req datasource.Sch
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				MarkdownDescription: "The ID of the settings (seems to be static over time)",
+				MarkdownDescription: "The Id of the settings (seems to be static over time)",
 				Computed:            true,
 			},
 			"allow_external_registrations": schema.BoolAttribute{
@@ -88,7 +88,7 @@ func (d *UsersSettingsDataSource) Read(ctx context.Context, req datasource.ReadR
 	}
 
 	// Map API → Terraform state
-	data.Id = types.StringValue(result.ID)
+	data.Id = types.StringValue(result.Id)
 	data.IsAllowExternalRegistrations = types.BoolValue(result.IsAllowExternalRegistrations)
 	data.IsAllowMemberInvitations = types.BoolValue(result.IsAllowMemberInvitations)
 	data.IsMemberAllowedToCreateWorkspaces = types.BoolValue(result.IsMemberAllowedToCreateWorkspaces)

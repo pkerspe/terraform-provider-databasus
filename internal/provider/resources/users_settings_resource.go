@@ -35,7 +35,7 @@ func (r *UsersSettingsResource) Schema(ctx context.Context, req resource.SchemaR
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				MarkdownDescription: "The ID of the settings (seems to be static over time)",
+				MarkdownDescription: "The Id of the settings (seems to be static over time)",
 				Computed:            true,
 			},
 			"allow_external_registrations": schema.BoolAttribute{
@@ -96,7 +96,7 @@ func (r *UsersSettingsResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	// save response values into the Terraform state.
-	plan.Id = types.StringValue(usersSettings.ID)
+	plan.Id = types.StringValue(usersSettings.Id)
 	plan.IsAllowExternalRegistrations = types.BoolValue(usersSettings.IsAllowExternalRegistrations)
 	plan.IsAllowMemberInvitations = types.BoolValue(usersSettings.IsAllowMemberInvitations)
 	plan.IsMemberAllowedToCreateWorkspaces = types.BoolValue(usersSettings.IsMemberAllowedToCreateWorkspaces)
@@ -128,7 +128,7 @@ func (r *UsersSettingsResource) Read(ctx context.Context, req resource.ReadReque
 	}
 
 	// Map API → Terraform state
-	data.Id = types.StringValue(result.ID)
+	data.Id = types.StringValue(result.Id)
 	data.IsAllowExternalRegistrations = types.BoolValue(result.IsAllowExternalRegistrations)
 	data.IsAllowMemberInvitations = types.BoolValue(result.IsAllowMemberInvitations)
 	data.IsMemberAllowedToCreateWorkspaces = types.BoolValue(result.IsMemberAllowedToCreateWorkspaces)
@@ -163,7 +163,7 @@ func (r *UsersSettingsResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	// Map API response to Terraform state
-	data.Id = types.StringValue(usersSettings.ID)
+	data.Id = types.StringValue(usersSettings.Id)
 	data.IsAllowExternalRegistrations = types.BoolValue(usersSettings.IsAllowExternalRegistrations)
 	data.IsAllowMemberInvitations = types.BoolValue(usersSettings.IsAllowMemberInvitations)
 	data.IsMemberAllowedToCreateWorkspaces = types.BoolValue(usersSettings.IsMemberAllowedToCreateWorkspaces)

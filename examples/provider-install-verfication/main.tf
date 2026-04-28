@@ -24,7 +24,7 @@ resource "databasus_workspace" "itest_generated_workspace" {
 data "databasus_all_workspaces" "existing_workspaces" {}
 
 data "databasus_workspace" "existing_workspace" {
-  id = "c3c57774-920e-4c01-bafd-e27b3b51a0d7"
+  id = resource.databasus_workspace.itest_generated_workspace.id
 }
 
 data "databasus_users_settings" "current_settings" {
@@ -34,6 +34,21 @@ resource "databasus_users_settings" "new_settings" {
   allow_external_registrations        = false
   allow_member_invitations            = false
   member_allowed_to_create_workspaces = false
+}
+
+resource "databasus_storage_s3" "new_s3_storage" {
+  name                        = "itest-s3-storage"
+  workspace_id                = resource.databasus_workspace.itest_generated_workspace.id
+  is_system                   = true
+  s3_access_key               = "SKFHJSKJLHDF-SDFDFDFDF-DFDFDSFD"
+  s3_secret_key               = "SECRET-SKFHJSKJLHDF-SDFDFDFDF-DFDFDSFD"
+  s3_bucket                   = "bucketname"
+  s3_endpoint                 = ""
+  s3_prefix                   = ""
+  s3_region                   = "eu-west-2"
+  s3_storage_class            = ""
+  s3_use_virtual_hosted_style = true
+  skip_tls_verify             = true
 }
 
 output "all_workspaces" {

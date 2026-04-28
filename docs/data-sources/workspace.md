@@ -23,7 +23,7 @@ data "databasus_workspace" "example" {
 
 ### Required
 
-- `id` (String) The workspace ID to fetch details for
+- `id` (String) The workspace Id to fetch details for
 
 ### Read-Only
 

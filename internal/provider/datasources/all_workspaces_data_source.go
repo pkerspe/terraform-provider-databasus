@@ -102,7 +102,7 @@ func (d *AllWorkspacesDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	for _, w := range results.Items {
 		workspaces = append(workspaces, client.WorkspaceDataSourceModel{
-			Id:        types.StringValue(w.ID),
+			Id:        types.StringValue(w.Id),
 			Name:      types.StringValue(w.Name),
 			CreatedAt: types.StringValue(w.CreatedAt),
 		})

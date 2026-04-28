@@ -54,7 +54,7 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 			},
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The internal ID of the workspace",
+				MarkdownDescription: "The internal Id of the workspace",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -103,7 +103,7 @@ func (r *WorkspaceResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	// save response values into the Terraform state.
-	plan.Id = types.StringValue(workspace.ID)
+	plan.Id = types.StringValue(workspace.Id)
 	plan.Name = types.StringValue(workspace.Name)
 	plan.CreatedAt = types.StringValue(workspace.CreatedAt)
 
@@ -134,7 +134,7 @@ func (r *WorkspaceResource) Read(ctx context.Context, req resource.ReadRequest, 
 	}
 
 	// Map API → Terraform state
-	data.Id = types.StringValue(result.ID)
+	data.Id = types.StringValue(result.Id)
 	data.Name = types.StringValue(result.Name)
 	data.CreatedAt = types.StringValue(result.CreatedAt)
 
@@ -163,7 +163,7 @@ func (r *WorkspaceResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	// Map API response to Terraform state
-	data.Id = types.StringValue(workspace.ID)
+	data.Id = types.StringValue(workspace.Id)
 	data.Name = types.StringValue(workspace.Name)
 	data.CreatedAt = types.StringValue(workspace.CreatedAt)
 

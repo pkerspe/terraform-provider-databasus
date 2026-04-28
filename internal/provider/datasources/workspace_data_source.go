@@ -44,7 +44,7 @@ func (d *WorkspaceDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				Computed:            true,
 			},
 			"id": schema.StringAttribute{
-				MarkdownDescription: "The workspace ID to fetch details for",
+				MarkdownDescription: "The workspace Id to fetch details for",
 				Required:            true,
 			},
 		},
@@ -83,7 +83,7 @@ func (d *WorkspaceDataSource) Read(ctx context.Context, req datasource.ReadReque
 	// Validate input
 	if data.Id.IsNull() || data.Id.IsUnknown() {
 		resp.Diagnostics.AddError(
-			"Missing Workspace ID",
+			"Missing Workspace Id",
 			"The data source requires an id to query the API.",
 		)
 		return
@@ -96,7 +96,7 @@ func (d *WorkspaceDataSource) Read(ctx context.Context, req datasource.ReadReque
 	}
 
 	// Map API → Terraform state
-	data.Id = types.StringValue(result.ID)
+	data.Id = types.StringValue(result.Id)
 	data.Name = types.StringValue(result.Name)
 	data.CreatedAt = types.StringValue(result.CreatedAt)
 

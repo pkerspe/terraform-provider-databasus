@@ -87,6 +87,7 @@ func (p *DatabasusProvider) Resources(ctx context.Context) []func() resource.Res
 	return []func() resource.Resource{
 		resources.NewWorkspaceResource,
 		resources.NewUsersSettingsResource,
+		resources.NewStorageS3Resource,
 	}
 }
 
