@@ -149,7 +149,7 @@ type WorkspaceDataSourceModel struct {
 	Id        types.String `tfsdk:"id"`
 }
 
-// Create a new Workspace in Databasus for the given name
+// Create a new Workspace in Databasus for the given name.
 func (c *DatabasusClient) CreateWorkspace(ctx context.Context, name string) (*WorkspaceResponseModel, error) {
 	var result WorkspaceResponseModel
 
@@ -189,7 +189,7 @@ func (c *DatabasusClient) ListWorkspaces(ctx context.Context) (*WorkspacesListRe
 	return &result, nil
 }
 
-// Update an Existing Workspace from Databasus for a given id
+// Update an Existing Workspace from Databasus for a given id.
 func (c *DatabasusClient) UpdateWorkspace(ctx context.Context, id string, name string) (*WorkspaceResponseModel, error) {
 	var result WorkspaceResponseModel
 
@@ -206,7 +206,7 @@ func (c *DatabasusClient) UpdateWorkspace(ctx context.Context, id string, name s
 	return &result, nil
 }
 
-// Delete an Existing Workspace from Databasus for a given id
+// Delete an Existing Workspace from Databasus for a given id.
 func (c *DatabasusClient) DeleteWorkspace(ctx context.Context, id string) error {
 	var result WorkspaceResponseModel
 
@@ -243,7 +243,7 @@ type SettingsResourceModel struct {
 	IsMemberAllowedToCreateWorkspaces types.Bool   `tfsdk:"member_allowed_to_create_workspaces"`
 }
 
-// settings always exist, so the create just internally calls the update
+// settings always exist, so the create just internally calls the update function.
 func (c *DatabasusClient) CreateUsersSettings(ctx context.Context, allowExternalRegistrations bool, allowMemberInvitations bool, memberAllowedToCreateWorkspaces bool) (*SettingsResponseModel, error) {
 	currentSettings, err := c.GetUsersSettings(ctx)
 	if err != nil {
@@ -273,7 +273,6 @@ func (c *DatabasusClient) UpdateUsersSettings(ctx context.Context, id string, al
 		"isMemberAllowedToCreateWorkspaces": memberAllowedToCreateWorkspaces,
 	}
 
-	//id does not really seem to b needed, so we only send it if we have it already
 	if id != "" {
 		body["id"] = id
 	}
@@ -287,7 +286,7 @@ func (c *DatabasusClient) UpdateUsersSettings(ctx context.Context, id string, al
 	return &result, nil
 }
 
-// Delete does not exist, so we just do nothing here
+// Delete does not exist, so we just do nothing here.
 func (c *DatabasusClient) DeleteUsersSettings(ctx context.Context, id string) error {
 	return nil
 }
@@ -358,7 +357,7 @@ type StorageS3DetailsResponseModel struct {
 	StorageId               string `json:"storageId"`
 }
 
-// internal helper to transform Model to map that can be used in request body
+// internal helper to transform Model to map that can be used in request body.
 func marshallStorageS3ResourceModel(data StorageS3ResourceModel) map[string]any {
 	body := map[string]any{
 		"isSystem":      data.IsSystem.ValueBool(),
@@ -421,7 +420,7 @@ func (c *DatabasusClient) UpdateStorageS3(ctx context.Context, id string, data S
 	return &result, nil
 }
 
-// Delete the S3 storage configuration
+// Delete the S3 storage configuration.
 func (c *DatabasusClient) DeleteStorageS3(ctx context.Context, id string) error {
 	err := c.doRequest(ctx, "DELETE", "/storages/"+id, nil, nil)
 	if err != nil {
