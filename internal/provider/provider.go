@@ -5,6 +5,7 @@ package provider
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -39,8 +40,12 @@ func (p *DatabasusProvider) Metadata(ctx context.Context, req provider.MetadataR
 	resp.Version = p.version
 }
 
+//go:embed provider.md
+var providerMarkdown string
+
 func (p *DatabasusProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		MarkdownDescription: providerMarkdown,
 		Attributes: map[string]schema.Attribute{
 			"baseurl": schema.StringAttribute{
 				MarkdownDescription: "The REST API base URL from the Databasus instance e.g. https://youserver.local/api/v1",
