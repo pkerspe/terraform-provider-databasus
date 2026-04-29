@@ -93,6 +93,7 @@ func (p *DatabasusProvider) Resources(ctx context.Context) []func() resource.Res
 		resources.NewWorkspaceResource,
 		resources.NewUsersSettingsResource,
 		resources.NewStorageS3Resource,
+		resources.NewStorageLocalResource,
 	}
 }
 

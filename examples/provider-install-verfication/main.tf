@@ -51,6 +51,11 @@ resource "databasus_storage_s3" "new_s3_storage" {
   skip_tls_verify             = true
 }
 
+resource "databasus_storage_local" "example" {
+  name         = "my-local-storage"
+  workspace_id = resource.databasus_workspace.itest_generated_workspace.id
+}
+
 output "all_workspaces" {
   value = data.databasus_all_workspaces.existing_workspaces
 }
