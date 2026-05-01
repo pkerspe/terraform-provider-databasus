@@ -16,8 +16,13 @@ func TestStorageLocalResource(t *testing.T) {
 			// Create and Read testing
 			{
 				Config: ProviderConfig + `
+resource "databasus_workspace" "itest_generated_workspace" {
+  name = "itest-workspace"
+}
+
 resource "databasus_storage_local" "test" {
-	name = "test_local_storage"
+	name 					= "test_local_storage"
+	workspace_id	= resource.databasus_workspace.itest_generated_workspace.id
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
