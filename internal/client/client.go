@@ -721,14 +721,6 @@ type Header struct {
 	Value string `json:"value"`
 }
 
-func headersSliceToMap(headers []Header) map[string]string {
-	result := make(map[string]string, len(headers))
-	for _, h := range headers {
-		result[h.Key] = h.Value
-	}
-	return result
-}
-
 // internal helper to transform Model to map that can be used in request body.
 func marshallNotifierWebhookResourceModel(ctx context.Context, data NotifierWebhookResourceModel) map[string]any {
 	headers := make(map[string]string)
