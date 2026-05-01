@@ -3,6 +3,17 @@
 
 # Do not use this file in production or VPS. This file is intended for local development only. 
 services:
+  db:
+    image: postgres:17
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: test_db
+    ports:
+      - "8432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
   databasus:
     container_name: databasus
     image: databasus/databasus:latest
@@ -16,3 +27,6 @@ services:
       - ./wrapper_set_admin_pwd.sh:/wrapper_set_admin_pwd.sh:ro
     restart: unless-stopped
     entrypoint: ["/bin/sh", "/wrapper_set_admin_pwd.sh"]
+volumes:
+  postgres_data:
+    driver: local

@@ -11,7 +11,7 @@ description: |-
   Provider Support Map:
   | Provider Version | Tested Databasus Version |
   |------------------|--------------------------|
-  | v0.1.x           | v3.32.2                  |
+  | v0.1.x - v0.2.x  | v3.32.2                  |
 ---
 
 # databasus Provider
@@ -31,7 +31,7 @@ Provider Support Map:
 
 | Provider Version | Tested Databasus Version |
 |------------------|--------------------------|
-| v0.1.x           | v3.32.2                  |
+| v0.1.x - v0.2.x  | v3.32.2                  |
 
 ## Example Usage
 

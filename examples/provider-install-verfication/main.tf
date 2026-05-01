@@ -13,12 +13,8 @@ provider "databasus" {
   password = "supersecret123"
 }
 
-locals {
-  workspace_ts = "itest-workspace_${formatdate("YYYY-MM-DD_hh-mm-ss", timestamp())}"
-}
-
 resource "databasus_workspace" "itest_generated_workspace" {
-  name = local.workspace_ts
+  name = "itest-workspace"
 }
 
 data "databasus_all_workspaces" "existing_workspaces" {}
@@ -56,6 +52,29 @@ resource "databasus_storage_local" "example" {
   workspace_id = resource.databasus_workspace.itest_generated_workspace.id
 }
 
+resource "databasus_database_postgresql" "example" {
+  name            = "my-postgres-db"
+  database        = "test_db"
+  host            = "db" // using the docker service name here since we test with local docker
+  port            = 5432
+  is_https        = false
+  username        = "admin"
+  password        = "admin"
+  include_schemas = ["public"]
+  workspace_id    = resource.databasus_workspace.itest_generated_workspace.id
+}
+
+resource "databasus_notifier_webhook" "example" {
+  name           = "my-webhook-notifier"
+  body_template  = "{ \"title\": \"{{heading}}\", \"message\": \"{{message}}\" }"
+  webhook_method = "POST"
+  webhook_url    = "https://localhost:8088/webhooktest"
+  headers = {
+    Authorization = "Bearer myescuretoken"
+  }
+  workspace_id = resource.databasus_workspace.itest_generated_workspace.id
+}
+
 output "all_workspaces" {
   value = data.databasus_all_workspaces.existing_workspaces
 }
@@ -66,4 +85,14 @@ output "workspace" {
 
 output "settings" {
   value = data.databasus_users_settings.current_settings
+}
+
+output "database" {
+  value     = resource.databasus_database_postgresql.example
+  sensitive = true
+}
+
+output "notifier-id" {
+  value = resource.databasus_notifier_webhook.example.id
+  //sensitive = true
 }
