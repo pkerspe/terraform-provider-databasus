@@ -72,6 +72,8 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
+      # disable parallel runs due to token issues (databasus seems to invalidate a token for the same user once a new one is created and bot jobs create their own token)
+      max-parallel: 1
       matrix:
         # Terraform versions
         terraform:
@@ -90,7 +92,7 @@ jobs:
       - name: Wait for service
         run: |
           for i in {1..20}; do
-            curl -s http://localhost:4005/healthh && exit 0
+            curl -s http://localhost:4005/health && exit 0
             echo "Waiting for databasus service..."
             sleep 3
           done
