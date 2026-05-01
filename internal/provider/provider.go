@@ -83,7 +83,7 @@ func (p *DatabasusProvider) Configure(ctx context.Context, req provider.Configur
 
 // a function to get a token and use provider instance specific caching to avoid multiple token requests
 // during the the same terraform run and avoid invalid tokens in parallel runs
-// due to re-requesting of tokens during multiple calls to the configure function of the provider
+// due to re-requesting of tokens during multiple calls to the configure function of the provider.
 func (p *DatabasusProvider) getToken(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) string {
 	var config DatabasusProviderModel
 
