@@ -6,6 +6,7 @@ package provider
 import (
 	"context"
 	_ "embed"
+	"sync"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -26,6 +27,8 @@ type DatabasusProvider struct {
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
 	version string
+	token   string
+	mu      sync.Mutex
 }
 
 // DatabasusProviderModel describes the provider data model.
@@ -72,20 +75,38 @@ func (p *DatabasusProvider) Configure(ctx context.Context, req provider.Configur
 		return
 	}
 
-	// get token from Databasus for API calls
-	token, err := client.GetJWT(config.BaseUrl.ValueString(), config.Email.ValueString(), config.Password.ValueString())
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to authenticate against Databasus REST API",
-			err.Error(),
-		)
-		return
-	}
-
-	client := client.NewDatabasusClient(config.BaseUrl.ValueString(), token)
+	client := client.NewDatabasusClient(config.BaseUrl.ValueString(), p.getToken(ctx, req, resp))
 
 	resp.DataSourceData = client
 	resp.ResourceData = client
+}
+
+// a function to get a token and use provider instance specific caching to avoid multiple token requests
+// during the the same terraform run and avoid invalid tokens in parallel runs
+// due to re-requesting of tokens during multiple calls to the configure function of the provider
+func (p *DatabasusProvider) getToken(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) string {
+	var config DatabasusProviderModel
+
+	diags := req.Config.Get(ctx, &config)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return ""
+	}
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if p.token != "" {
+		return p.token
+	}
+
+	token, err := client.GetJWT(config.BaseUrl.ValueString(), config.Email.ValueString(), config.Password.ValueString())
+	if err != nil {
+		panic("failed to authenticate: " + err.Error())
+	}
+
+	p.token = token
+	return token
 }
 
 func (p *DatabasusProvider) Resources(ctx context.Context) []func() resource.Resource {
