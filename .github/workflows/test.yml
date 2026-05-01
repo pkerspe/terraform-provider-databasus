@@ -72,8 +72,6 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      # disable parallel runs due to token issues (databasus seems to invalidate a token for the same user once a new one is created and bot jobs create their own token)
-      max-parallel: 1
       matrix:
         # Terraform versions
         terraform:
@@ -107,5 +105,5 @@ jobs:
       - run: terraform init
       - env:
           TF_ACC: "1"
-        run: go test -v -cover ./internal/...
+        run: go test -v -parallel 1 -cover ./internal/...
         timeout-minutes: 10
