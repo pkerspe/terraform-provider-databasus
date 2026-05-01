@@ -28,6 +28,7 @@ resource "databasus_storage_local" "test" {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("databasus_storage_local.test", "name", "test_local_storage"),
 					resource.TestCheckResourceAttrSet("databasus_storage_local.test", "id"),
+					resource.TestCheckResourceAttrSet("databasus_storage_local.test", "workspace_id"),
 					// TODO: add more checks and also tests for resource update
 				),
 			},
