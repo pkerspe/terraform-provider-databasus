@@ -14,8 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/pkerspe/terraform-provider-databasus/internal/client"
-	"github.com/pkerspe/terraform-provider-databasus/internal/provider/datasources"
-	"github.com/pkerspe/terraform-provider-databasus/internal/provider/resources"
 )
 
 // Ensure DatabasusProvider satisfies various provider interfaces.
@@ -111,20 +109,20 @@ func (p *DatabasusProvider) getToken(ctx context.Context, req provider.Configure
 
 func (p *DatabasusProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		resources.NewWorkspaceResource,
-		resources.NewUsersSettingsResource,
-		resources.NewStorageS3Resource,
-		resources.NewStorageLocalResource,
-		resources.NewDatabasePostgresqlResource,
-		resources.NewNotifierWebhookResource,
+		NewWorkspaceResource,
+		NewUsersSettingsResource,
+		NewStorageS3Resource,
+		NewStorageLocalResource,
+		NewDatabasePostgresqlResource,
+		NewNotifierWebhookResource,
 	}
 }
 
 func (p *DatabasusProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		datasources.NewWorkspaceDataSource,
-		datasources.NewAllWorkspacesDataSource,
-		datasources.NewUsersSettingsDataSource,
+		NewWorkspaceDataSource,
+		NewAllWorkspacesDataSource,
+		NewUsersSettingsDataSource,
 	}
 }
 

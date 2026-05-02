@@ -1,7 +1,7 @@
-// Copyright kerspep
-// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) pkerspe
+// SPDX-License-Identifier: Apache-2.0
 
-package datasources
+package provider
 
 import (
 	"context"
