@@ -23,7 +23,7 @@ resource "databasus_workspace" "test" {
 resource "databasus_database_postgresql" "test" {
   name            = "test-postgres-db"
   database        = "test_db"
-  host            = "localhost"
+  host            = "db"
   port            = 5432
   is_https        = false
   username        = "admin"

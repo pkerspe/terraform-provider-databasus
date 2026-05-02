@@ -68,6 +68,17 @@ jobs:
           --health-interval=5s
           --health-timeout=2s
           --health-retries=10
+      db:
+        image: postgres:17
+        container_name: postgres_db
+        environment:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: test_db
+        ports:
+          - "5432:5432"
+        volumes:
+          - postgres_data:/var/lib/postgresql/data
 
     timeout-minutes: 15
     strategy:
@@ -105,5 +116,5 @@ jobs:
       - run: terraform init
       - env:
           TF_ACC: "1"
-        run: go test -v -parallel 1 -cover ./internal/...
+        run: go test -v -cover ./internal/...
         timeout-minutes: 10
