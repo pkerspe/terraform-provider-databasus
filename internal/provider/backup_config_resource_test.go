@@ -35,6 +35,9 @@ resource "databasus_database_postgresql" "example" {
   password        = "admin"
   include_schemas = ["public"]
   workspace_id    = resource.databasus_workspace.example.id
+	
+	# needed for proper cleanup after tests, so that TF does not destroy the storage before the database resource
+	depends_on = [databasus_storage_local.example]
 }
 
 resource "databasus_backup_config" "test" {
