@@ -132,7 +132,7 @@ func (r *BackupConfigResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"retention_gfs_years": schema.Int32Attribute{
 				MarkdownDescription: "Only used if Retention Policy is set to GFS. Number of Yearly backups. Defaults to 3",
-				Default:             int32default.StaticInt32(12),
+				Default:             int32default.StaticInt32(3),
 				Computed:            true,
 				Optional:            true,
 			},
