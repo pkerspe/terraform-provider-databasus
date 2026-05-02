@@ -55,8 +55,20 @@ resource "databasus_storage_local" "example" {
 resource "databasus_database_postgresql" "example" {
   name            = "my-postgres-db"
   database        = "test_db"
-  host            = "localhost"
-  port            = 8432
+  host            = "db"
+  port            = 5432
+  is_https        = false
+  username        = "admin"
+  password        = "admin"
+  include_schemas = ["public"]
+  workspace_id    = resource.databasus_workspace.itest_generated_workspace.id
+}
+
+resource "databasus_database_postgresql" "example-2" {
+  name            = "my-postgres-db-2"
+  database        = "test_db"
+  host            = "db"
+  port            = 5432
   is_https        = false
   username        = "admin"
   password        = "admin"
@@ -73,6 +85,38 @@ resource "databasus_notifier_webhook" "example" {
     Authorization = "Bearer myescuretoken"
   }
   workspace_id = resource.databasus_workspace.itest_generated_workspace.id
+}
+
+resource "databasus_backup_config" "example" {
+  enabled                              = true
+  interval                             = "DAILY"
+  time_of_day                          = "08:00"
+  weekday                              = 1
+  day_of_month                         = 1
+  cron_expression                      = "0 0 * * *"
+  max_failed_retry_count               = 0
+  encryption                           = false
+  retention_policy_type                = "COUNT"
+  retention_count                      = 30
+  retention_time_period                = "WEEK"
+  retention_gfs_hours                  = 24
+  retention_gfs_days                   = 7
+  retention_gfs_weeks                  = 14
+  retention_gfs_months                 = 12
+  retention_gfs_years                  = 3
+  send_notifications_on_backup_success = true
+  send_notifications_on_backup_failure = true
+  storage_id                           = resource.databasus_storage_local.example.id
+  database_id                          = resource.databasus_database_postgresql.example.id
+}
+
+resource "databasus_backup_config" "example-2" {
+  enabled               = true
+  interval              = "DAILY"
+  time_of_day           = "08:00"
+  retention_policy_type = "COUNT"
+  storage_id            = resource.databasus_storage_local.example.id
+  database_id           = resource.databasus_database_postgresql.example-2.id
 }
 
 output "all_workspaces" {
