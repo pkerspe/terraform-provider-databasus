@@ -23,8 +23,8 @@ resource "databasus_workspace" "test" {
 resource "databasus_database_postgresql" "test" {
   name            = "test-postgres-db"
   database        = "test_db"
-  host            = "db" // using the docker service name here since we test with local docker
-  port            = 5432
+  host            = "localhost"
+  port            = 8432
   is_https        = false
   username        = "admin"
   password        = "admin"
