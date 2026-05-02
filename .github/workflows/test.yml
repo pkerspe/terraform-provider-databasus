@@ -76,6 +76,11 @@ jobs:
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: admin
           POSTGRES_DB: test_db
+        options: >-
+          --health-cmd="pg_isready -U admin"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
 
     timeout-minutes: 15
     strategy:
