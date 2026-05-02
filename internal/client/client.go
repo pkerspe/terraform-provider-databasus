@@ -962,7 +962,7 @@ func (c *DatabasusClient) UpdateBackupConfig(ctx context.Context, data BackupCon
 	return c.CreateBackupConfig(ctx, data)
 }
 
-// Delete is not possible for backup configs, can only set to false, but need to use update then
+// Delete is not possible for backup configs, can only set to false, but need to use update then.
 func (c *DatabasusClient) DeleteBackupConfig(ctx context.Context) error {
 	return nil
 }
