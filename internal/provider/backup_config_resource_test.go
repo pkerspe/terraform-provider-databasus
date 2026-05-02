@@ -28,7 +28,7 @@ resource "databasus_storage_local" "example" {
 resource "databasus_database_postgresql" "example" {
   name            = "my-postgres-db"
   database        = "test_db"
-  host            = "db"
+  host            = "localhost"
   port            = 5432
   is_https        = false
   username        = "admin"
