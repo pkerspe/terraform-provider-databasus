@@ -35,7 +35,7 @@ resource "databasus_database_postgresql" "test" {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "name", "test-postgres-db"),
 					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "database", "test_db"),
-					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "host", "localhost"),
+					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "host", "db"),
 					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "port", "5432"),
 					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "is_https", "false"),
 
