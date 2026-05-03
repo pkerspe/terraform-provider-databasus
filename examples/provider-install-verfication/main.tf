@@ -63,6 +63,17 @@ resource "databasus_database_mariadb" "example" {
   workspace_id = resource.databasus_workspace.itest_generated_workspace.id
 }
 
+resource "databasus_database_mysql" "example" {
+  name         = "my-mysql-db"
+  database     = "test_db"
+  host         = "mysql"
+  port         = 3306
+  is_https     = false
+  username     = "admin"
+  password     = "admin"
+  workspace_id = resource.databasus_workspace.itest_generated_workspace.id
+}
+
 resource "databasus_database_postgresql" "example" {
   name            = "my-postgres-db"
   database        = "test_db"

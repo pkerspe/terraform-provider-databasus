@@ -117,6 +117,7 @@ func (p *DatabasusProvider) Resources(ctx context.Context) []func() resource.Res
 		NewNotifierWebhookResource,
 		NewBackupConfigResource,
 		NewDatabaseMariaDbResource,
+		NewDatabaseMySqlResource,
 	}
 }
 

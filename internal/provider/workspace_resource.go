@@ -132,6 +132,14 @@ func (r *WorkspaceResource) Read(ctx context.Context, req resource.ReadRequest, 
 
 	result, err := r.client.GetWorkspace(ctx, data.Id.ValueString())
 	if err != nil {
+		// The Databasus RETS API returns currently an wrong RC 400 in case of te Record not found
+		// Terraform expects an empty return in that case without an error in the diagnostics
+		// see also https://github.com/databasus/databasus/issues/529
+		if err.IsNotFound() {
+			resp.State.RemoveResource(ctx)
+			return
+		}
+
 		resp.Diagnostics.AddError("API Error", err.Error())
 		return
 	}

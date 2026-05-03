@@ -90,6 +90,15 @@ jobs:
           MYSQL_USER: admin
           MYSQL_PASSWORD: admin
           MYSQL_DATABASE: test_db
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: admin
+          MYSQL_USER: admin
+          MYSQL_PASSWORD: admin
+          MYSQL_DATABASE: test_db
+        ports:
+          - "3307:3306"   # MySQL mapped to a different host port to avoid collision with mariadb
     timeout-minutes: 15
     strategy:
       fail-fast: false
