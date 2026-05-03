@@ -101,7 +101,6 @@ jobs:
           - "3307:3306"   # MySQL mapped to a different host port to avoid collision with mariadb
       mongodb:
         image: mongo:7
-        container_name: mongodb_db
         env:
           MONGO_INITDB_ROOT_USERNAME: admin
           MONGO_INITDB_ROOT_PASSWORD: admin
