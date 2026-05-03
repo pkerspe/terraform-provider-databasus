@@ -696,7 +696,7 @@ func MapResponseToDatabaseMariaDbResourceModel(response *DatabaseMariaDbResponse
 	data.Database = types.StringValue(response.MariaDb.Database)
 	data.Host = types.StringValue(response.MariaDb.Host)
 	data.IsHttps = types.BoolValue(response.MariaDb.IsHttps)
-	data.Port = types.Int32Value(int32(response.MariaDb.Port))
+	data.Port = types.Int32Value(response.MariaDb.Port)
 	data.ExcludeEvents = types.BoolValue(response.MariaDb.IsExcludeEvents)
 	// TODO: CHECK how to map: data.IncludeSchemas = types.ListValue(types.String(), response.MariaDb.IncludeSchemas)
 	// username and password are encrypted by databasus, we just ignore those for now since we could not detect changes anyways
