@@ -1,8 +1,20 @@
 # Copyright (c) pkerspe
 # SPDX-License-Identifier: Apache-2.0
 
-# Do not use this file in production or VPS. This file is intended for local development only. 
+# Do not use this file in production. This file is intended for local development only. 
 services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb_db
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DATABASE: test_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
   db:
     image: postgres:17
     container_name: postgres_db
@@ -29,4 +41,6 @@ services:
     entrypoint: ["/bin/sh", "/wrapper_set_admin_pwd.sh"]
 volumes:
   postgres_data:
+    driver: local
+  mariadb_data:
     driver: local

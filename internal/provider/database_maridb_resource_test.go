@@ -1,0 +1,48 @@
+// Copyright (c) pkerspe
+// SPDX-License-Identifier: Apache-2.0
+
+package provider
+
+import (
+	"testing"
+
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+)
+
+func TestDatabaseMariaDbResource(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: TestAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				Config: ProviderConfig + `
+resource "databasus_workspace" "test" {
+  name = "test-workspace"
+}
+
+resource "databasus_database_mariadb" "test" {
+  name            = "test-maria-db"
+  database        = "test_db"
+  host            = "mariadb"
+  port            = 3306
+  is_https        = false
+  username        = "admin"
+  password        = "admin"
+  workspace_id    = resource.databasus_workspace.test.id
+}
+`,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("databasus_database_mariadb.test", "name", "test-maria-db"),
+					resource.TestCheckResourceAttr("databasus_database_mariadb.test", "database", "test_db"),
+					resource.TestCheckResourceAttr("databasus_database_mariadb.test", "host", "mariadb"),
+					resource.TestCheckResourceAttr("databasus_database_mariadb.test", "port", "3306"),
+
+					resource.TestCheckResourceAttrSet("databasus_database_mariadb.test", "username"),
+					resource.TestCheckResourceAttrSet("databasus_database_mariadb.test", "password"),
+
+					resource.TestCheckResourceAttrSet("databasus_database_mariadb.test", "workspace_id"),
+				),
+			},
+		},
+	})
+}

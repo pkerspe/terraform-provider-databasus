@@ -81,7 +81,15 @@ jobs:
           --health-interval=5s
           --health-timeout=5s
           --health-retries=10
-
+      mariadb:
+        image: mariadb:latest
+        ports:
+          - "3306:3306"
+        env:
+          MYSQL_ROOT_PASSWORD: admin
+          MYSQL_USER: admin
+          MYSQL_PASSWORD: admin
+          MYSQL_DATABASE: test_db
     timeout-minutes: 15
     strategy:
       fail-fast: false
