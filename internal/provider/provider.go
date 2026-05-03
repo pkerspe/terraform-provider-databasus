@@ -118,6 +118,7 @@ func (p *DatabasusProvider) Resources(ctx context.Context) []func() resource.Res
 		NewBackupConfigResource,
 		NewDatabaseMariaDbResource,
 		NewDatabaseMySqlResource,
+		NewDatabaseMongoDbResource,
 	}
 }
 

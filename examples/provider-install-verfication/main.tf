@@ -74,6 +74,19 @@ resource "databasus_database_mysql" "example" {
   workspace_id = resource.databasus_workspace.itest_generated_workspace.id
 }
 
+resource "databasus_database_mongodb" "example" {
+  name          = "my-mongo-db"
+  auth_database = "admin"
+  database      = "test_db"
+  host          = "mongodb"
+  port          = 27017
+  is_https      = false
+  username      = "admin"
+  password      = "admin"
+  workspace_id = resource.databasus_workspace.itest_generated_workspace.id
+}
+
+
 resource "databasus_database_postgresql" "example" {
   name            = "my-postgres-db"
   database        = "test_db"

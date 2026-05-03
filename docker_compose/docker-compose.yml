@@ -1,7 +1,7 @@
 # Copyright (c) pkerspe
 # SPDX-License-Identifier: Apache-2.0
 
-# Do not use this file in production. This file is intended for local development only. 
+# Do not use this file in production. This file is intended for local development and automated testing only. 
 services:
   mariadb:
     image: mariadb:latest
@@ -27,6 +27,17 @@ services:
       - "3307:3306"   # MySQL mapped to a different host port to avoid collision with mariadb
     volumes:
       - mysql_data:/var/lib/mysql
+  mongodb:
+    image: mongo:7
+    container_name: mongodb_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: test_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
   db:
     image: postgres:17
     container_name: postgres_db
@@ -57,4 +68,6 @@ volumes:
   mariadb_data:
     driver: local
   mysql_data:
+    driver: local
+  mongodb_data:
     driver: local
