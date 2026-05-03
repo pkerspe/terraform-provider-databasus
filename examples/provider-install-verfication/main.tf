@@ -83,7 +83,7 @@ resource "databasus_database_mongodb" "example" {
   is_https      = false
   username      = "admin"
   password      = "admin"
-  workspace_id = resource.databasus_workspace.itest_generated_workspace.id
+  workspace_id  = resource.databasus_workspace.itest_generated_workspace.id
 }
 
 
