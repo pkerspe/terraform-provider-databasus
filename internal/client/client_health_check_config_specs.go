@@ -92,7 +92,7 @@ func (c *DatabasusClient) UpdateHealthCheckConfig(ctx context.Context, data Heal
 	return nil
 }
 
-// Delete not supported for health-check config in databasus (disable health-check instead)
+// Delete not supported for health-check config in databasus (disable health-check instead).
 func (c *DatabasusClient) DeleteHealthCheckConfig(ctx context.Context, data HealthCheckConfigResourceModel) *ErrorDetails {
 	data.HealthCheckEnabled = types.BoolValue(false)
 	err := c.UpdateHealthCheckConfig(ctx, data)
