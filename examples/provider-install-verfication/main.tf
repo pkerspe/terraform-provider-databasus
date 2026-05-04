@@ -99,7 +99,7 @@ resource "databasus_database_postgresql" "example" {
   workspace_id    = resource.databasus_workspace.itest_generated_workspace.id
 }
 
-resource "databasus_database_postgresql" "example-2" {
+resource "databasus_database_postgresql" "example_2" {
   name            = "my-postgres-db-2"
   database        = "test_db"
   host            = "db"
@@ -145,13 +145,26 @@ resource "databasus_backup_config" "example" {
   database_id                          = resource.databasus_database_postgresql.example.id
 }
 
-resource "databasus_backup_config" "example-2" {
+resource "databasus_backup_config" "example_2" {
   enabled               = true
   interval              = "DAILY"
   time_of_day           = "08:00"
   retention_policy_type = "COUNT"
   storage_id            = resource.databasus_storage_local.example.id
-  database_id           = resource.databasus_database_postgresql.example-2.id
+  database_id           = resource.databasus_database_postgresql.example_2.id
+}
+
+resource "databasus_health_check_config" "example" {
+  database_id                     = resource.databasus_database_postgresql.example.id
+  health_check_enabled            = true
+  interval_minutes                = 10
+  attempts_before_considered_down = 1
+  store_attempts_days             = 1
+}
+
+resource "databasus_health_check_config" "example_2" {
+  database_id          = resource.databasus_database_postgresql.example_2.id
+  health_check_enabled = false
 }
 
 output "all_workspaces" {
@@ -171,7 +184,7 @@ output "database" {
   sensitive = true
 }
 
-output "notifier-id" {
+output "notifier_id" {
   value = resource.databasus_notifier_webhook.example.id
   //sensitive = true
 }
