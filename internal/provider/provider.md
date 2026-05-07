@@ -2,7 +2,7 @@ A Provider to manage your Databasus (<https://databasus.com/>) configuration usi
 
 This provider is still in an early stage and currently supports a reduced set of resources only.
 
-Additional resources will be added over time, but in a demand drive way due to limited development capacity.
+Additional resources will be added over time, but in a demand driven way due to limited development capacity.
 If you need a specific resource please open a feature request ticket in the github repository: <https://github.com/pkerspe/terraform-provider-databasus/issues>
 
 Please note that this provider is not developed by the Databasus team and not supported by them, in fact not even encouraged to use an IaC approach for configuration since it is not in line with their goals for the tool. As such, provider support could break with any new release of Databasus.
