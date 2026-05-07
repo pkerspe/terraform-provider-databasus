@@ -1,6 +1,6 @@
 # terraform-provider-databasus
 
-A terraform Provider for DATABASUS (<https://databasus.com/>) to manage resources like workspaces, users, DB connections, storages and schedules.
+A terraform Provider for DATABASUS (<https://databasus.com/>) to manage resources like workspaces, notifiers, DB connections, storages and backup configs.
 
 ## Note
 
