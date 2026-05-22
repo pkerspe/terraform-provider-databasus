@@ -3,41 +3,41 @@
 
 # Do not use this file in production. This file is intended for local development and automated testing only. 
 services:
-  mariadb:
-    image: mariadb:latest
-    container_name: mariadb_db
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-      MYSQL_DATABASE: test_db
-    ports:
-      - "3306:3306"
-    volumes:
-      - mariadb_data:/var/lib/mysql
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_db
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-      MYSQL_DATABASE: test_db
-    ports:
-      - "3307:3306"   # MySQL mapped to a different host port to avoid collision with mariadb
-    volumes:
-      - mysql_data:/var/lib/mysql
-  mongodb:
-    image: mongo:7
-    container_name: mongodb_db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
-      MONGO_INITDB_DATABASE: test_db
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
+  # mariadb:
+  #   image: mariadb:latest
+  #   container_name: mariadb_db
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: admin
+  #     MYSQL_USER: admin
+  #     MYSQL_PASSWORD: admin
+  #     MYSQL_DATABASE: test_db
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mariadb_data:/var/lib/mysql
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: mysql_db
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: admin
+  #     MYSQL_USER: admin
+  #     MYSQL_PASSWORD: admin
+  #     MYSQL_DATABASE: test_db
+  #   ports:
+  #     - "3307:3306"   # MySQL mapped to a different host port to avoid collision with mariadb
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  # mongodb:
+  #   image: mongo:7
+  #   container_name: mongodb_db
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: admin
+  #     MONGO_INITDB_ROOT_PASSWORD: admin
+  #     MONGO_INITDB_DATABASE: test_db
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb_data:/data/db
   db:
     image: postgres:17
     container_name: postgres_db
