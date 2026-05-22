@@ -54,12 +54,12 @@ resource "databasus_health_check_config" "test" {
 			{
 				Config: ProviderConfig + HealthCheckBaseConfig + `
 resource "databasus_health_check_config" "test_2" {
-  database_id           							= resource.databasus_database_postgresql.test.id
-  health_check_enabled								= true
+  	database_id           				= resource.databasus_database_postgresql.test.id
+  	health_check_enabled				= true
 	sent_notification_when_unavailable 	= true
-	attempts_before_considered_down 		= 1
-	store_attempts_days 								= 1
-	interval_minutes 										= 2
+	attempts_before_considered_down 	= 1
+	store_attempts_days 				= 1
+	interval_minutes 					= 2
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -74,8 +74,8 @@ resource "databasus_health_check_config" "test_2" {
 			{
 				Config: ProviderConfig + HealthCheckBaseConfig + `
 resource "databasus_health_check_config" "test_3" {
-  database_id           							= resource.databasus_database_postgresql.test.id
-  health_check_enabled								= false
+  database_id           = resource.databasus_database_postgresql.test.id
+  health_check_enabled	= false
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(

@@ -31,9 +31,10 @@ type DatabasusProvider struct {
 
 // DatabasusProviderModel describes the provider data model.
 type DatabasusProviderModel struct {
-	BaseUrl  types.String `tfsdk:"baseurl"`
-	Email    types.String `tfsdk:"email"`
-	Password types.String `tfsdk:"password"`
+	BaseUrl   types.String `tfsdk:"baseurl"`
+	Email     types.String `tfsdk:"email"`
+	Password  types.String `tfsdk:"password"`
+	VerifySsl types.Bool   `tfsdk:"verify_ssl"`
 }
 
 func (p *DatabasusProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -60,6 +61,10 @@ func (p *DatabasusProvider) Schema(ctx context.Context, req provider.SchemaReque
 				MarkdownDescription: "The password of the user",
 				Required:            true,
 			},
+			"verify_ssl": schema.BoolAttribute{
+				MarkdownDescription: "Whether to verify the TLS certificate of the Databasus instance. Should be set to false if using a self-signed certificate.",
+				Optional:            true,
+			},
 		},
 	}
 }
@@ -73,7 +78,7 @@ func (p *DatabasusProvider) Configure(ctx context.Context, req provider.Configur
 		return
 	}
 
-	client := client.NewDatabasusClient(config.BaseUrl.ValueString(), p.getToken(ctx, req, resp))
+	client := client.NewDatabasusClient(config.BaseUrl.ValueString(), p.getToken(ctx, req, resp), config.VerifySsl.ValueBool())
 
 	resp.DataSourceData = client
 	resp.ResourceData = client
@@ -98,7 +103,7 @@ func (p *DatabasusProvider) getToken(ctx context.Context, req provider.Configure
 		return p.token
 	}
 
-	token, err := client.GetJWT(config.BaseUrl.ValueString(), config.Email.ValueString(), config.Password.ValueString())
+	token, err := client.GetJWT(config.BaseUrl.ValueString(), config.Email.ValueString(), config.Password.ValueString(), config.VerifySsl.ValueBool())
 	if err != nil {
 		panic("failed to authenticate: " + err.Error())
 	}

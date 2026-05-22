@@ -20,6 +20,17 @@ provider "databasus" {
 `
 )
 
+const (
+	ProviderConfigHttps = `
+provider "databasus" {
+  baseurl 		= "https://localhost:8443/api/v1"
+  email   		= "admin"
+  password 		= "supersecret123"
+  verify_ssl 	= false
+}
+`
+)
+
 // TestAccProtoV6ProviderFactories is used to instantiate a provider during acceptance testing.
 // The factory function is called for each Terraform CLI command to create a provider
 // server that the CLI can connect to and interact with.

@@ -6,6 +6,7 @@ package client
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -50,14 +51,20 @@ func (e *ErrorDetails) IsNotFound() bool {
 		strings.Contains(strings.ToLower(e.ResponseBody), "record not found") //fix for invalid API RCs from Databasus
 }
 
-func NewDatabasusClient(baseURL, token string) *DatabasusClient {
+func NewDatabasusClient(baseURL, token string, verifySsl bool) *DatabasusClient {
+	transport := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: !verifySsl,
+		},
+	}
 	// Create a new HTTP client with the custom RoundTripper
 	client := &http.Client{
 		Transport: &CustomRoundTripper{
-			Transport: http.DefaultTransport, // Use the default transport
+			Transport: transport,
 			Token:     token,
 		},
 	}
+
 	return &DatabasusClient{
 		BaseURL: baseURL,
 		Token:   token,
@@ -65,13 +72,27 @@ func NewDatabasusClient(baseURL, token string) *DatabasusClient {
 	}
 }
 
-func GetJWT(baseURL, email, password string) (string, error) {
+func GetJWT(baseURL, email, password string, verifySsl bool) (string, error) {
 	body := map[string]string{
 		"email":    email,
 		"password": password,
 	}
 
 	b, _ := json.Marshal(body)
+
+	// Create a new HTTP client with SSL verification disabled if verifySsl is false
+	httpClient := &http.Client{
+		Transport: &CustomRoundTripper{
+			Transport: http.DefaultTransport,
+			Token:     "",
+		},
+	}
+
+	if !verifySsl {
+		httpClient.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+	}
 
 	resp, err := http.Post(baseURL+"/users/signin", "application/json", bytes.NewBuffer(b))
 	if err != nil {
