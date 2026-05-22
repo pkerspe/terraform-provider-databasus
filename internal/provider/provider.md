@@ -13,7 +13,8 @@ Provider Support Map:
 
 | Provider Version | Tested Databasus Version |
 |------------------|--------------------------|
-| v0.1.x - v0.5.x  | v3.32.2                  |
+| v0.1.x - v0.6.x  | v3.32.2                  |
+| v0.7.x - v0.7.x  | v3.40.0                  |
 
 ## Getting Started
 
