@@ -9,6 +9,9 @@
 *.dylib
 .terraform
 .terraform.lock.hcl
+.terrraform.tfstate.lock.info
+terrafom.tfstate
+terrafom.tfstate.backup
 
 # Test binary, built with `go test -c`
 *.test
