@@ -73,8 +73,8 @@ jobs:
         ports:
           - "8443:443"
         volumes:
-          - ../../docker_compose/nginx.conf:/etc/nginx/nginx.conf:ro
-          - ../../docker_compose/certs:/certs:ro
+          - nginx.conf:/etc/nginx/nginx.conf:ro
+          - certs:/certs:ro
       db:
         image: postgres:17
         ports:
