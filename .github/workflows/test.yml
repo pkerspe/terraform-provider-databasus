@@ -68,13 +68,6 @@ jobs:
           --health-interval=5s
           --health-timeout=2s
           --health-retries=10
-      nginx:
-        image: nginx:latest
-        ports:
-          - "8443:443"
-        options: >-
-          --mount type=bind,source=${{ github.workspace }}/../docker_compose/nginx.conf,target=/etc/nginx/nginx.conf,readonly
-          --mount type=bind,source=${{ github.workspace }}/../docker_compose/certs,target=/certs,readonly
       db:
         image: postgres:17
         ports:
@@ -132,6 +125,10 @@ jobs:
         with:
           terraform_version: ${{ matrix.terraform }}
           terraform_wrapper: false
+      - name: Install nginx
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nginx
       - name: Wait for service
         run: |
           for i in {1..20}; do
@@ -146,6 +143,17 @@ jobs:
         run: |
           docker exec ${{ job.services.databasus.id }} \
             ./main --new-password="supersecret123" --email="admin"
+
+      - name: Copy nginx config
+        run: |
+          sudo cp docker_compose/nginx.conf /etc/nginx/nginx.conf
+
+      - name: Validate nginx config
+        run: sudo nginx -t
+
+      - name: Start nginx
+        run: sudo systemctl start nginx
+
       - run: go mod download
       - run: terraform init
       - env:
