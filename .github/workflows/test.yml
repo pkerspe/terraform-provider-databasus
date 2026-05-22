@@ -70,9 +70,6 @@ jobs:
           --health-retries=10
       nginx:
         image: nginx:latest
-        depends_on:
-          databasus:
-            condition: service_healthy
         ports:
           - "8443:443"
         volumes:
