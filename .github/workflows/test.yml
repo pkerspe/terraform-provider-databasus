@@ -147,7 +147,8 @@ jobs:
       - name: Copy nginx config
         run: |
           sudo cp docker_compose/nginx_github_action.conf /etc/nginx/nginx.conf
-          sudo cp docker_compose/certs/server.crt /certs/server.crt
+          sudo mkdir -p /certs
+          sudo cp docker_compose/certs/* /certs
 
       - name: Validate nginx config
         run: sudo nginx -t
