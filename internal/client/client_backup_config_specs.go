@@ -81,7 +81,7 @@ type BackupConfigResponseModel struct {
 }
 
 type BackupIntervalDetailsResponseModel struct {
-	Interval       string `json:"interval"`
+	Interval       string `json:"type"`
 	TimeOfDay      string `json:"timeOfDay"`
 	Weekday        int32  `json:"weekday"`
 	DayOfMonth     int32  `json:"dayOfMonth"`
@@ -123,7 +123,7 @@ func marshallBackupConfigResourceModel(data BackupConfigResourceModel) map[strin
 		"backupInterval": map[string]any{
 			"cronExpression": data.CronExpression.ValueString(),
 			"dayOfMonth":     data.DayOfMonth.ValueInt32(),
-			"interval":       data.Interval.ValueString(),
+			"type":           data.Interval.ValueString(),
 			"weekday":        data.Weekday.ValueInt32(),
 			"timeOfDay":      data.TimeOfDay.ValueString(),
 		},

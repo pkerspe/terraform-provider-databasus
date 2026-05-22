@@ -147,8 +147,18 @@ resource "databasus_backup_config" "example" {
 
 resource "databasus_backup_config" "example_2" {
   enabled               = true
-  interval              = "DAILY"
+  interval              = "HOURLY"
   time_of_day           = "08:00"
+  retention_policy_type = "COUNT"
+  storage_id            = resource.databasus_storage_local.example.id
+  database_id           = resource.databasus_database_postgresql.example_2.id
+}
+
+
+resource "databasus_backup_config" "example_3" {
+  enabled               = true
+  interval              = "CRON"
+  cron_expression       = "0 0 * * *"
   retention_policy_type = "COUNT"
   storage_id            = resource.databasus_storage_local.example.id
   database_id           = resource.databasus_database_postgresql.example_2.id

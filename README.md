@@ -71,7 +71,7 @@ To compile the provider, run `go install`. This will build the provider and put 
 
 To generate or update documentation, run `make generate`.
 
-In order to run the full suite of Acceptance tests, run `make testacc`.
+In order to run the full suite of Acd cceptance tests, run `make testacc`.
 
 *Note:* Acceptance tests create real resources, and often cost money to run.
 
@@ -80,3 +80,16 @@ make testacc
 ```
 
 You can also just run terraform locally against a local test instance of databasus. You will find the needed docker compose file under `/docker_compose/docker-compose.yml` and you find a test terraform script under `/examples/provider-install-verification`
+Make sure to call `docker-compose` with the `pull always` parameter to get the latest version of databasus to test with
+```shell
+docker compose up -d --pull always
+```
+
+If you run with the local docker compose stack you can also perfom a test execution of the provider to create some resources.
+In the folder /examples/provider-install-verification is a main.tf file for this pupose. To execute it run:
+```shell
+cd ./examples/provider-install-verfication 
+terraform init
+terraform plan
+terraform apply
+```
