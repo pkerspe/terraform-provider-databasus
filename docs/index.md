@@ -144,3 +144,7 @@ provider "databasus" {
 - `baseurl` (String) The REST API base URL from the Databasus instance e.g. https://youserver.local/api/v1
 - `email` (String) The email (username) of the user to be used for executing requests against the Databasus REST API. Must be a user with admin Role.
 - `password` (String) The password of the user
+
+### Optional
+
+- `verify_ssl` (Boolean) Whether to verify the TLS certificate of the Databasus instance. Should be set to false if using a self-signed certificate.

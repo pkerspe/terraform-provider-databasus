@@ -73,8 +73,8 @@ jobs:
         ports:
           - "8443:443"
         options: >-
-          --mount type=bind,source=${{ github.workspace }}/docker_compose/nginx.conf,target=/etc/nginx/nginx.conf,readonly
-          --mount type=bind,source=${{ github.workspace }}/docker_compose/certs,target=/certs,readonly
+          --mount type=bind,source=${{ github.workspace }}/../docker_compose/nginx.conf,target=/etc/nginx/nginx.conf,readonly
+          --mount type=bind,source=${{ github.workspace }}/../docker_compose/certs,target=/certs,readonly
       db:
         image: postgres:17
         ports:
