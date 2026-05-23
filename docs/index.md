@@ -130,9 +130,10 @@ resource "databasus_backup_config" "example" {
 
 ```terraform
 provider "databasus" {
-  endpoint = "https://databasus.host.local/api/v1"
-  user     = "admin"
-  password = "somesecretpassword"
+  endpoint   = "https://databasus.host.local/api/v1"
+  user       = "admin"
+  password   = "somesecretpassword"
+  verify_ssl = true
 }
 ```
 
