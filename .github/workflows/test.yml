@@ -10,6 +10,8 @@ on:
   push:
     paths-ignore:
       - 'README.md'
+  schedule:
+    - cron: '23 23 * * *'
 
 # Testing only needs permissions to read the repository contents.
 permissions:
