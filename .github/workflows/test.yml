@@ -110,6 +110,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
+      max-parallel: 1 # Run tests sequentially to avoid issues with parallel access to databasus service
       matrix:
         # Terraform versions
         terraform:
