@@ -4,8 +4,7 @@ A terraform Provider for DATABASUS (<https://databasus.com/>) to manage resource
 
 ## Note
 
-This provider is still a DRAFT version.
-Use at your own risk.
+This provider is still in a rather new state, not all resources (e.g. full set of notifiers or storage types) are supported yet. Over time and on demand more resources will be added.
 
 ## Requirements
 
