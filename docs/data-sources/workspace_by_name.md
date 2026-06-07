@@ -3,12 +3,12 @@
 page_title: "databasus_workspace_by_name Data Source - databasus"
 subcategory: ""
 description: |-
-  A data source to get information about a configured Workspace in Databasus. The name (instead of the ID) is used to query the worksapce in this Data Source. NOTE: this only fetches the first matching workspace for the given name.
+  A data source to get information about a configured Workspace in Databasus. The name (instead of the ID) is used to query the workspace in this Data Source. NOTE: this only fetches the first matching workspace for the given name.
 ---
 
 # databasus_workspace_by_name (Data Source)
 
-A data source to get information about a configured Workspace in Databasus. The name (instead of the ID) is used to query the worksapce in this Data Source. NOTE: this only fetches the first matching workspace for the given name.
+A data source to get information about a configured Workspace in Databasus. The name (instead of the ID) is used to query the workspace in this Data Source. NOTE: this only fetches the first matching workspace for the given name.
 
 ## Example Usage
 

@@ -32,7 +32,7 @@ func (d *WorkspaceByNameDataSource) Metadata(ctx context.Context, req datasource
 
 func (d *WorkspaceByNameDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "A data source to get information about a configured Workspace in Databasus. The name (instead of the ID) is used to query the worksapce in this Data Source. NOTE: this only fetches the first matching workspace for the given name.",
+		MarkdownDescription: "A data source to get information about a configured Workspace in Databasus. The name (instead of the ID) is used to query the workspace in this Data Source. NOTE: this only fetches the first matching workspace for the given name.",
 
 		Attributes: map[string]schema.Attribute{
 			"created_at": schema.StringAttribute{
