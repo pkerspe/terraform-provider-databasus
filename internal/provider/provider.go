@@ -131,6 +131,7 @@ func (p *DatabasusProvider) Resources(ctx context.Context) []func() resource.Res
 func (p *DatabasusProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewWorkspaceDataSource,
+		NewWorkspaceByNameDataSource,
 		NewAllWorkspacesDataSource,
 		NewUsersSettingsDataSource,
 	}

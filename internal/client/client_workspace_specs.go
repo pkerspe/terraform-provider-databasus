@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -55,6 +56,33 @@ func (c *DatabasusClient) GetWorkspace(ctx context.Context, id string) (*Workspa
 	err := c.doRequest(ctx, "GET", "/workspaces/"+id, nil, &result)
 	if err != nil {
 		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (c *DatabasusClient) GetWorkspaceByName(ctx context.Context, name string) (*WorkspaceResponseModel, *ErrorDetails) {
+	var result WorkspaceResponseModel
+
+	var resultTemp WorkspacesListResponse
+	err := c.doRequest(ctx, "GET", "/workspaces", nil, &resultTemp)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, workspace := range resultTemp.Items {
+		if workspace.Name == name {
+			result = workspace
+			break
+		}
+	}
+
+	if result.Id == "" {
+		return nil, &ErrorDetails{
+			ErrorCode:    404,
+			ResponseBody: "Workspace not found for name: " + name,
+			ErrorInst:    fmt.Errorf("workspace not found for name: %s", name),
+		}
 	}
 
 	return &result, nil

@@ -23,6 +23,10 @@ data "databasus_workspace" "existing_workspace" {
   id = resource.databasus_workspace.itest_generated_workspace.id
 }
 
+data "databasus_workspace_by_name" "existing_workspace_by_name" {
+  name = resource.databasus_workspace.itest_generated_workspace.name
+}
+
 data "databasus_users_settings" "current_settings" {
 }
 
