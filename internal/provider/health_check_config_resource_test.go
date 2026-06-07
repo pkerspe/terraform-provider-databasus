@@ -26,6 +26,28 @@ resource "databasus_database_postgresql" "test" {
   include_schemas = ["public"]
   workspace_id    = resource.databasus_workspace.test.id
 }
+resource "databasus_database_postgresql" "test_2" {
+  name            = "test-postgres-db"
+  database        = "test_db"
+  host            = "db"
+  port            = 5432
+  is_https        = false
+  username        = "admin"
+  password        = "admin"
+  include_schemas = ["public"]
+  workspace_id    = resource.databasus_workspace.test.id
+}
+resource "databasus_database_postgresql" "test_3" {
+  name            = "test-postgres-db"
+  database        = "test_db"
+  host            = "db"
+  port            = 5432
+  is_https        = false
+  username        = "admin"
+  password        = "admin"
+  include_schemas = ["public"]
+  workspace_id    = resource.databasus_workspace.test.id
+}
 `
 )
 
@@ -54,7 +76,7 @@ resource "databasus_health_check_config" "test" {
 			{
 				Config: ProviderConfig + HealthCheckBaseConfig + `
 resource "databasus_health_check_config" "test_2" {
-  	database_id           				= resource.databasus_database_postgresql.test.id
+  	database_id           				= resource.databasus_database_postgresql.test_2.id
   	health_check_enabled				= true
 	sent_notification_when_unavailable 	= true
 	attempts_before_considered_down 	= 1
@@ -74,7 +96,7 @@ resource "databasus_health_check_config" "test_2" {
 			{
 				Config: ProviderConfig + HealthCheckBaseConfig + `
 resource "databasus_health_check_config" "test_3" {
-  database_id           = resource.databasus_database_postgresql.test.id
+  database_id           = resource.databasus_database_postgresql.test_3.id
   health_check_enabled	= false
 }
 `,
