@@ -45,11 +45,11 @@ func (r *BackupConfigResource) Schema(ctx context.Context, req resource.SchemaRe
 				Required:            true,
 			},
 			"interval": schema.StringAttribute{
-				MarkdownDescription: "The schedule interval for the backup. Can be HOURLY, DAILY, WEEKLY, MONTHLY",
+				MarkdownDescription: "The schedule interval for the backup. Can be HOURLY, DAILY, WEEKLY, MONTHLY, CRON",
 				Required:            true,
 			},
 			"time_of_day": schema.StringAttribute{
-				MarkdownDescription: "Only needed when interval is set to DAILY, WEEKLY, MONTHLY or CRON. The time of the day in 24 hour format when to perform the backup. Defaults to 00:00 UTC",
+				MarkdownDescription: "Only needed when interval is set to DAILY, WEEKLY, MONTHLY. The time of the day in 24 hour format when to perform the backup. Defaults to 00:00 UTC",
 				Default:             stringdefault.StaticString("00:00"),
 				Computed:            true,
 				Optional:            true,

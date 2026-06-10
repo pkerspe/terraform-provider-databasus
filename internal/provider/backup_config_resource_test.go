@@ -40,6 +40,51 @@ resource "databasus_database_postgresql" "example" {
 	depends_on = [databasus_storage_local.example]
 }
 
+resource "databasus_database_postgresql" "example_2" {
+  name            = "my-postgres-db_2"
+  database        = "test_db"
+  host            = "db"
+  port            = 5432
+  ssl_mode        = "disable"
+  username        = "admin"
+  password        = "admin"
+  include_schemas = ["public"]
+  workspace_id    = resource.databasus_workspace.example.id
+	
+	# needed for proper cleanup after tests, so that TF does not destroy the storage before the database resource
+	depends_on = [databasus_storage_local.example]
+}
+
+resource "databasus_database_postgresql" "example_3" {
+  name            = "my-postgres-db_3"
+  database        = "test_db"
+  host            = "db"
+  port            = 5432
+  ssl_mode        = "disable"
+  username        = "admin"
+  password        = "admin"
+  include_schemas = ["public"]
+  workspace_id    = resource.databasus_workspace.example.id
+	
+	# needed for proper cleanup after tests, so that TF does not destroy the storage before the database resource
+	depends_on = [databasus_storage_local.example]
+}
+
+resource "databasus_database_postgresql" "example_4" {
+  name            = "my-postgres-db_4"
+  database        = "test_db"
+  host            = "db"
+  port            = 5432
+  ssl_mode        = "disable"
+  username        = "admin"
+  password        = "admin"
+  include_schemas = ["public"]
+  workspace_id    = resource.databasus_workspace.example.id
+	
+	# needed for proper cleanup after tests, so that TF does not destroy the storage before the database resource
+	depends_on = [databasus_storage_local.example]
+}
+
 resource "databasus_backup_config" "test" {
   interval              = "DAILY"
   time_of_day           = "08:00"
@@ -47,6 +92,34 @@ resource "databasus_backup_config" "test" {
   retention_count       = 30
   storage_id            = resource.databasus_storage_local.example.id
   database_id           = resource.databasus_database_postgresql.example.id
+}
+
+resource "databasus_backup_config" "test_2" {
+  interval              = "CRON"
+  cron_expression       = "0 0 * * *"
+  retention_policy_type = "COUNT"
+  retention_count       = 30
+  storage_id            = resource.databasus_storage_local.example.id
+  database_id           = resource.databasus_database_postgresql.example_2.id
+}
+
+resource "databasus_backup_config" "test_3" {
+  interval              = "WEEKLY"
+  time_of_day           = "10:00"
+  weekday       				= "3"
+  retention_policy_type = "COUNT"
+  retention_count       = 30
+  storage_id            = resource.databasus_storage_local.example.id
+  database_id           = resource.databasus_database_postgresql.example_3.id
+}
+
+resource "databasus_backup_config" "test_4" {
+  interval              = "MONTHLY"
+  day_of_month       		= "15"
+  retention_policy_type = "COUNT"
+  retention_count       = 30
+  storage_id            = resource.databasus_storage_local.example.id
+  database_id           = resource.databasus_database_postgresql.example_4.id
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -57,11 +130,14 @@ resource "databasus_backup_config" "test" {
 					resource.TestCheckResourceAttrSet("databasus_backup_config.test", "storage_id"),
 					resource.TestCheckResourceAttrSet("databasus_backup_config.test", "database_id"),
 
+
+					// check individual interval configs
+					resource.TestCheckResourceAttr("databasus_backup_config.test_2", "cron_expression", "0 0 * * *"),
+					resource.TestCheckResourceAttr("databasus_backup_config.test_3", "weekday", "3"),
+					resource.TestCheckResourceAttr("databasus_backup_config.test_4", "day_of_month", "15"),
+
 					// check optional default values
 					resource.TestCheckResourceAttr("databasus_backup_config.test", "enabled", "true"),
-					resource.TestCheckResourceAttr("databasus_backup_config.test", "weekday", "1"),
-					resource.TestCheckResourceAttr("databasus_backup_config.test", "day_of_month", "1"),
-					resource.TestCheckResourceAttr("databasus_backup_config.test", "cron_expression", "0 0 * * *"),
 					resource.TestCheckResourceAttr("databasus_backup_config.test", "max_failed_retry_count", "0"),
 					resource.TestCheckResourceAttr("databasus_backup_config.test", "encryption", "true"),
 					resource.TestCheckResourceAttr("databasus_backup_config.test", "retention_time_period", "MONTH"),

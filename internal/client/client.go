@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -34,6 +35,7 @@ type DatabasusClient struct {
 	BaseURL string
 	Token   string
 	HTTP    *http.Client
+	Debug   bool
 }
 
 type ErrorDetails struct {
@@ -65,10 +67,13 @@ func NewDatabasusClient(baseURL, token string, verifySsl bool) *DatabasusClient 
 		},
 	}
 
+	debug := os.Getenv("TF_DATABASUS_DEBUG") == "1"
+
 	return &DatabasusClient{
 		BaseURL: baseURL,
 		Token:   token,
 		HTTP:    client,
+		Debug:   debug,
 	}
 }
 
@@ -116,7 +121,30 @@ func (c *DatabasusClient) doRequest(ctx context.Context, method, path string, bo
 	var errorDetails ErrorDetails
 	url := c.BaseURL + path
 
-	req, err := http.NewRequestWithContext(ctx, method, url, body)
+	// Buffer the request body so it can be both logged and sent.
+	var reqBodyBytes []byte
+	if body != nil {
+		var err error
+		reqBodyBytes, err = io.ReadAll(body)
+		if err != nil {
+			errorDetails.ErrorInst = fmt.Errorf("failed to read request body: %w", err)
+			return &errorDetails
+		}
+	}
+
+	if c.Debug {
+		fmt.Fprintf(os.Stderr, "[DATABASUS DEBUG] --> %s %s\n", method, url)
+		if len(reqBodyBytes) > 0 {
+			fmt.Fprintf(os.Stderr, "[DATABASUS DEBUG]     Request body: %s\n", string(reqBodyBytes))
+		}
+	}
+
+	var reqReader io.Reader
+	if len(reqBodyBytes) > 0 {
+		reqReader = bytes.NewReader(reqBodyBytes)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, url, reqReader)
 	if err != nil {
 		errorDetails.ErrorInst = fmt.Errorf("failed to create request: %w", err)
 		return &errorDetails
@@ -129,20 +157,31 @@ func (c *DatabasusClient) doRequest(ctx context.Context, method, path string, bo
 	}
 	defer resp.Body.Close()
 
+	// Read the full response body so it can be logged and/or decoded.
+	respBodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		errorDetails.ErrorInst = fmt.Errorf("failed to read response body: %w", err)
+		return &errorDetails
+	}
+
+	if c.Debug {
+		fmt.Fprintf(os.Stderr, "[DATABASUS DEBUG] <-- %d %s\n", resp.StatusCode, url)
+		if len(respBodyBytes) > 0 {
+			fmt.Fprintf(os.Stderr, "[DATABASUS DEBUG]     Response body: %s\n", string(respBodyBytes))
+		}
+	}
+
 	// Check status code
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		respBody, _ := io.ReadAll(resp.Body)
-
-		errorDetails.ResponseBody = string(respBody)
+		errorDetails.ResponseBody = string(respBodyBytes)
 		errorDetails.ErrorCode = resp.StatusCode
-		errorDetails.ErrorInst = fmt.Errorf("API error: status=%d body=%s", resp.StatusCode, string(respBody))
+		errorDetails.ErrorInst = fmt.Errorf("API error: status=%d body=%s", resp.StatusCode, string(respBodyBytes))
 		return &errorDetails
-		//return fmt.Errorf("API error: status=%d body=%s", resp.StatusCode, string(respBody)), &errorDetails
 	}
 
 	// Decode if output is provided
 	if out != nil {
-		if err := json.NewDecoder(resp.Body).Decode(out); err != nil {
+		if err := json.NewDecoder(bytes.NewReader(respBodyBytes)).Decode(out); err != nil {
 			errorDetails.ErrorInst = fmt.Errorf("failed to decode response: %w", err)
 			return &errorDetails
 		}
