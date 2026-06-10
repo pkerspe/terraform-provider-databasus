@@ -130,7 +130,6 @@ resource "databasus_backup_config" "test_4" {
 					resource.TestCheckResourceAttrSet("databasus_backup_config.test", "storage_id"),
 					resource.TestCheckResourceAttrSet("databasus_backup_config.test", "database_id"),
 
-
 					// check individual interval configs
 					resource.TestCheckResourceAttr("databasus_backup_config.test_2", "cron_expression", "0 0 * * *"),
 					resource.TestCheckResourceAttr("databasus_backup_config.test_3", "weekday", "3"),

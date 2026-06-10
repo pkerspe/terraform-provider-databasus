@@ -119,7 +119,6 @@ func marshallBackupConfigResourceModel(data BackupConfigResourceModel) map[strin
 		notificationOptions = append(notificationOptions, "BACKUP_FAILED")
 	}
 
-
 	body := map[string]any{
 		"backupInterval": map[string]any{
 			"cronExpression": data.CronExpression.ValueString(),
