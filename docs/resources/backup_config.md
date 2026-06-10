@@ -51,7 +51,7 @@ resource "databasus_backup_config" "example" {
 ### Required
 
 - `database_id` (String) The id of the database config to create the backup config for
-- `interval` (String) The schedule interval for the backup. Can be HOURLY, DAILY, WEEKLY, MONTHLY
+- `interval` (String) The schedule interval for the backup. Can be HOURLY, DAILY, WEEKLY, MONTHLY, CRON
 - `retention_policy_type` (String) Retention policy type to be used. Valid values are: TIME_PERIOD (time based backup policy, keeping backup of last periods defined in retention_time_period), COUNT (Keep only the specified number of most recent backups. Older backups beyond this count are automatically deleted, count is defined with retention_count), GFS (Grandfather-Father-Son rotation: keep the last N hourly, daily, weekly, monthly and yearly backups. This allows keeping backups over long periods of time within a reasonable storage space.)
 - `storage_id` (String) The id of storage to use for the backups
 
@@ -71,5 +71,5 @@ resource "databasus_backup_config" "example" {
 - `retention_time_period` (String) Only used if Retention Policy is set to TIME_PERIOD. How long to keep the backups. Backups older than this period are automatically deleted. Allowed values: DAY, WEEK, MONTH, 3_MONTH, 6_MONTH, YEAR, 2_YEARS, 3_YEARS. Defaults to MONTH
 - `send_notifications_on_backup_failure` (Boolean) Flag to indicate if notifications should be send when a backup fails. Defaults to true
 - `send_notifications_on_backup_success` (Boolean) Flag to indicate if notifications should be send when a backup completed successful. Defaults to false
-- `time_of_day` (String) Only needed when interval is set to DAILY, WEEKLY, MONTHLY or CRON. The time of the day in 24 hour format when to perform the backup. Defaults to 00:00 UTC
+- `time_of_day` (String) Only needed when interval is set to DAILY, WEEKLY, MONTHLY. The time of the day in 24 hour format when to perform the backup. Defaults to 00:00 UTC
 - `weekday` (Number) Only needed when interval is set to WEEKLY. The weekday when to execute the backup, Defaults to 1 for Monday
