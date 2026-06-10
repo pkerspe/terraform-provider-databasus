@@ -25,7 +25,10 @@ type DatabasePostgresqlResourceModel struct {
 	// DatabaseId     types.String `tfsdk:"database_id"`
 	Host           types.String `tfsdk:"host"`
 	IncludeSchemas types.List   `tfsdk:"include_schemas"`
-	IsHttps        types.Bool   `tfsdk:"is_https"`
+	SslMode        types.String `tfsdk:"ssl_mode"`
+	SslClientCert  types.String `tfsdk:"ssl_client_cert"`
+	SslClientKey   types.String `tfsdk:"ssl_client_key"`
+	SslRootCert    types.String `tfsdk:"ssl_root_cert"`
 	Password       types.String `tfsdk:"password"`
 	Port           types.Int32  `tfsdk:"port"`
 	Username       types.String `tfsdk:"username"`
@@ -38,7 +41,31 @@ func MapResponseToDatabasePostgresqlResourceModel(response *DatabasePostgresqlRe
 	data.Database = types.StringValue(response.Postgresql.Database)
 	// data.Type = types.StringValue(response.Type)
 	data.Host = types.StringValue(response.Postgresql.Host)
-	data.IsHttps = types.BoolValue(response.Postgresql.IsHttps)
+
+	// Preserve the planned ssl_mode value if the API returns an empty string,
+	// preventing an "unexpected new value" inconsistency error from Terraform.
+	if response.Postgresql.SslMode != "" {
+		data.SslMode = types.StringValue(response.Postgresql.SslMode)
+	}
+
+	// Optional SSL fields: use null when the API returns an empty string so that
+	// state stays consistent with a plan where the user did not set the attribute.
+	if response.Postgresql.SslClientCert != "" {
+		data.SslClientCert = types.StringValue(response.Postgresql.SslClientCert)
+	} else {
+		data.SslClientCert = types.StringNull()
+	}
+	if response.Postgresql.SslClientKey != "" {
+		data.SslClientKey = types.StringValue(response.Postgresql.SslClientKey)
+	} else {
+		data.SslClientKey = types.StringNull()
+	}
+	if response.Postgresql.SslRootCert != "" {
+		data.SslRootCert = types.StringValue(response.Postgresql.SslRootCert)
+	} else {
+		data.SslRootCert = types.StringNull()
+	}
+
 	data.Port = types.Int32Value(int32(response.Postgresql.Port))
 	// TODO: CHECK how to map: data.IncludeSchemas = types.ListValue(types.String(), response.Postgresql.IncludeSchemas)
 	// username and password are encrypted by databasus, we just ignore those for now since we could not detect changes anyways
@@ -58,7 +85,10 @@ type DatabasePostgresqlDetailsResponseModel struct {
 	Host           string   `json:"host"`
 	Id             string   `json:"id"`
 	IncludeSchemas []string `json:"includeSchemas"`
-	IsHttps        bool     `json:"isHttps"`
+	SslMode        string   `json:"sslMode"`
+	SslClientCert  string   `json:"sslClientCert"`
+	SslClientKey   string   `json:"sslClientKey"`
+	SslRootCert    string   `json:"sslRootCert"`
 	Password       string   `json:"password"`
 	Port           int      `json:"port"`
 	Username       string   `json:"username"`
@@ -95,7 +125,10 @@ func marshallDatabasePostgresqlResourceModel(data DatabasePostgresqlResourceMode
 			"port":                data.Port.ValueInt32(),
 			"username":            data.Username.ValueString(),
 			"password":            data.Password.ValueString(),
-			"isHttps":             data.IsHttps.ValueBool(),
+			"sslMode":             data.SslMode.ValueString(),
+			"sslClientCert":       data.SslClientCert.ValueString(),
+			"sslClientKey":        data.SslClientKey.ValueString(),
+			"sslRootCert":         data.SslRootCert.ValueString(),
 			"isExcludeExtensions": true,
 			"includeSchemas":      includeSchemasStrings,
 			//"databaseId"

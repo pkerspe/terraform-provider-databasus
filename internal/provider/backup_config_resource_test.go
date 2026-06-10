@@ -30,7 +30,7 @@ resource "databasus_database_postgresql" "example" {
   database        = "test_db"
   host            = "db"
   port            = 5432
-  is_https        = false
+  ssl_mode        = "disable"
   username        = "admin"
   password        = "admin"
   include_schemas = ["public"]

@@ -14,7 +14,8 @@ Provider Support Map:
 | Provider Version | Tested Databasus Version |
 |------------------|--------------------------|
 | v0.1.x - v0.6.x  | v3.32.2                  |
-| v0.7.x - v0.8.x  | v3.40.0 - v3.42.0        |
+| v0.7.x - v0.8.0  | v3.40.0                  |
+| v0.8.1 - v0.8.x  | v3.42.0                  |
 
 ## Getting Started
 
@@ -30,7 +31,7 @@ To configure a backup for a Database you need to configure at least 4 resources:
 
 Here is an example for a minimal setup using a local storage and a minimalist backup configuration mostly using the default values:
 
-````
+````terraform
 # create workspace where all configuration lives in
 resource "databasus_workspace" "example" {
   name = "my-workspace"
@@ -48,7 +49,7 @@ resource "databasus_database_postgresql" "example" {
   database        = "test_db"
   host            = "db"
   port            = 5432
-  is_https        = false
+  ssl_mode        = "disable"
   username        = "admin"
   password        = "admin"
   include_schemas = ["public"]

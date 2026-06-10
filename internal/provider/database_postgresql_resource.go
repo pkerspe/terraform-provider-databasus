@@ -56,9 +56,22 @@ func (r *DatabasePostgresqlResource) Schema(ctx context.Context, req resource.Sc
 				MarkdownDescription: "The port number of the PostgreSQL instance (e.g. 5432)",
 				Required:            true,
 			},
-			"is_https": schema.BoolAttribute{
-				MarkdownDescription: "Use HTTPS / TLS or not when connecting to the DB host",
+			"ssl_mode": schema.StringAttribute{
+				MarkdownDescription: "Configure the SSL mode when connecting to the DB host. Allowed values are: require, disable, verify_ca, verify-full",
 				Required:            true,
+			},
+			"ssl_client_cert": schema.StringAttribute{
+				MarkdownDescription: "Optional Client Certificate",
+				Optional:            true,
+			},
+			"ssl_client_key": schema.StringAttribute{
+				MarkdownDescription: "Optional Client Key",
+				Sensitive:           true,
+				Optional:            true,
+			},
+			"ssl_root_cert": schema.StringAttribute{
+				MarkdownDescription: "Optional. When provided, the server certificate is verified against this CA (if ssl_mode is set to verify-ca / verify-full).",
+				Optional:            true,
 			},
 			"username": schema.StringAttribute{
 				Required:            true,

@@ -25,7 +25,7 @@ resource "databasus_database_postgresql" "test" {
   database        = "test_db"
   host            = "db"
   port            = 5432
-  is_https        = false
+  ssl_mode        = "disable"
   username        = "admin"
   password        = "admin"
   include_schemas = ["public"]
@@ -37,7 +37,7 @@ resource "databasus_database_postgresql" "test" {
 					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "database", "test_db"),
 					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "host", "db"),
 					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "port", "5432"),
-					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "is_https", "false"),
+					resource.TestCheckResourceAttr("databasus_database_postgresql.test", "ssl_mode", "disable"),
 
 					resource.TestCheckResourceAttrSet("databasus_database_postgresql.test", "username"),
 					resource.TestCheckResourceAttrSet("databasus_database_postgresql.test", "password"),

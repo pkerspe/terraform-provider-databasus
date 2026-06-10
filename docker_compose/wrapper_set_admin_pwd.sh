@@ -1,14 +1,11 @@
 #!/bin/sh
 # Copyright pkerspe 2026
 # SPDX-License-Identifier: Apache-2.0
-
-
 GREEN="\033[0;32m"
 RED="\033[0;31m"
 RESET="\033[0m"
 
 set -e
-
 # cleanup database files to reset to "factory settings" and have a clean state for integration test
 echo "${RED}****************************************************************************************************************************************"
 echo "${RED}   Deleting database files after new start to reset Databasus to factory settings and create a clean state to all integration tests"

@@ -20,7 +20,7 @@ resource "databasus_database_postgresql" "test" {
   database        = "test_db"
   host            = "db"
   port            = 5432
-  is_https        = false
+  ssl_mode        = "disable"
   username        = "admin"
   password        = "admin"
   include_schemas = ["public"]
@@ -31,7 +31,7 @@ resource "databasus_database_postgresql" "test_2" {
   database        = "test_db"
   host            = "db"
   port            = 5432
-  is_https        = false
+  ssl_mode        = "disable"
   username        = "admin"
   password        = "admin"
   include_schemas = ["public"]
@@ -42,7 +42,7 @@ resource "databasus_database_postgresql" "test_3" {
   database        = "test_db"
   host            = "db"
   port            = 5432
-  is_https        = false
+  ssl_mode        = "disable"
   username        = "admin"
   password        = "admin"
   include_schemas = ["public"]

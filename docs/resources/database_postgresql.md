@@ -25,7 +25,7 @@ resource "databasus_database_postgresql" "example" {
   database        = "my-test-db"
   host            = "my-db-host.local"
   port            = 5432
-  is_https        = true
+  ssl_mode        = "disable"
   username        = "test-user"
   password        = "test-pwd"
   include_schemas = ["public"]
@@ -41,12 +41,18 @@ resource "databasus_database_postgresql" "example" {
 - `database` (String) The name of the database to be backed up
 - `host` (String) The hostname of the database instance
 - `include_schemas` (List of String) List of Schema names to include in the Backup. Use empty list for all.
-- `is_https` (Boolean) Use HTTPS / TLS or not when connecting to the DB host
 - `name` (String) The display name (in the Databasus UI) of the database configuration to be created
 - `password` (String, Sensitive) The password for the DB role to use when creating backups
 - `port` (Number) The port number of the PostgreSQL instance (e.g. 5432)
+- `ssl_mode` (String) Configure the SSL mode when connecting to the DB host. Allowed values are: require, disable, verify_ca, verify-full
 - `username` (String, Sensitive) The DB username (role) to be used for creating the backups
 - `workspace_id` (String) The id of the workspace the storage belongs to
+
+### Optional
+
+- `ssl_client_cert` (String) Optional Client Certificate
+- `ssl_client_key` (String, Sensitive) Optional Client Key
+- `ssl_root_cert` (String) Optional. When provided, the server certificate is verified against this CA (if ssl_mode is set to verify-ca / verify-full).
 
 ### Read-Only
 
