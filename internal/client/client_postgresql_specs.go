@@ -76,7 +76,7 @@ type DatabasePostgresqlResponseModel struct {
 	Name        string                                 `json:"name"`
 	WorkspaceId string                                 `json:"workspaceId"`
 	Type        string                                 `json:"type"`
-	Postgresql  DatabasePostgresqlDetailsResponseModel `json:"postgresql"`
+	Postgresql  DatabasePostgresqlDetailsResponseModel `json:"postgresqlLogical"`
 }
 
 type DatabasePostgresqlDetailsResponseModel struct {
@@ -114,25 +114,21 @@ func marshallDatabasePostgresqlResourceModel(data DatabasePostgresqlResourceMode
 	body := map[string]any{
 		"isAgentTokenGenerated": true,
 		"name":                  data.Name.ValueString(),
-		"type":                  "POSTGRES",
+		"type":                  "POSTGRES_LOGICAL",
 		"workspaceId":           data.WorkspaceId.ValueString(),
 		// "notifiers": []
-		"postgresql": map[string]any{
-			"backupType":          "PG_DUMP",
-			"cpuCount":            1,
-			"database":            data.Database.ValueString(),
-			"host":                data.Host.ValueString(),
-			"port":                data.Port.ValueInt32(),
-			"username":            data.Username.ValueString(),
-			"password":            data.Password.ValueString(),
-			"sslMode":             data.SslMode.ValueString(),
-			"sslClientCert":       data.SslClientCert.ValueString(),
-			"sslClientKey":        data.SslClientKey.ValueString(),
-			"sslRootCert":         data.SslRootCert.ValueString(),
-			"isExcludeExtensions": true,
-			"includeSchemas":      includeSchemasStrings,
-			//"databaseId"
-			//"version"
+		"postgresqlLogical": map[string]any{
+			"cpuCount":       1,
+			"database":       data.Database.ValueString(),
+			"host":           data.Host.ValueString(),
+			"port":           data.Port.ValueInt32(),
+			"username":       data.Username.ValueString(),
+			"password":       data.Password.ValueString(),
+			"sslMode":        data.SslMode.ValueString(),
+			"sslClientCert":  data.SslClientCert.ValueString(),
+			"sslClientKey":   data.SslClientKey.ValueString(),
+			"sslRootCert":    data.SslRootCert.ValueString(),
+			"includeSchemas": includeSchemasStrings,
 		},
 	}
 	return body
