@@ -16,6 +16,10 @@ rm -rf /databasus-data/*
 /app/start.sh &
 MAIN_PID=$!
 
+# install curl to poll for service readiness
+apt-get update
+apt-get install -y curl
+
 # Wait for port 4005
 echo "Waiting for service..."
 until curl -sf http://localhost:4005 > /dev/null; do
