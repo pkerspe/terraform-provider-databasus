@@ -9,11 +9,12 @@ description: |-
   Please note that this provider is not developed by the Databasus team and not supported by them, in fact not even encouraged to use an IaC approach for configuration since it is not in line with their goals for the tool. As such, provider support could break with any new release of Databasus.
   To limit risk please make sure to match the Provider release version with the Databasus version you are using.
   Provider Support Map:
-  | Provider Version | Tested Databasus Version |
-  |------------------|--------------------------|
-  | v0.1.x - v0.6.x  | v3.32.2                  |
-  | v0.7.x - v0.8.0  | v3.40.0                  |
-  | v0.8.1 - v0.8.x  | v3.42.0                  |
+  | Provider Version | Tested Databasus Version          |
+  |------------------|-----------------------------------|
+  | v0.1.x - v0.6.x  | v3.32.2                           |
+  | v0.7.x - v0.8.0  | v3.40.0                           |
+  | v0.8.1 - v0.8.x  | v3.42.0                           |
+  | v0.9.0 - v0.9.x  | v3.45.0 (use for 3.43 and above)  |
   Getting Started
   To configure a backup for a Database you need to configure at least 4 resources:
   1.) The workspace where the database and backup lives in
@@ -72,11 +73,12 @@ To limit risk please make sure to match the Provider release version with the Da
 
 Provider Support Map:
 
-| Provider Version | Tested Databasus Version |
-|------------------|--------------------------|
-| v0.1.x - v0.6.x  | v3.32.2                  |
-| v0.7.x - v0.8.0  | v3.40.0                  |
-| v0.8.1 - v0.8.x  | v3.42.0                  |
+| Provider Version | Tested Databasus Version          |
+|------------------|-----------------------------------|
+| v0.1.x - v0.6.x  | v3.32.2                           |
+| v0.7.x - v0.8.0  | v3.40.0                           |
+| v0.8.1 - v0.8.x  | v3.42.0                           |
+| v0.9.0 - v0.9.x  | v3.45.0 (use for 3.43 and above)  |
 
 ## Getting Started
 
