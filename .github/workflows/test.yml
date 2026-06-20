@@ -67,7 +67,6 @@ jobs:
           - 4005:4005
         options: >-
           --health-cmd="bash -c 'exec 3<>/dev/tcp/localhost/4005 && echo -e \"GET /health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3 && cat <&3 | grep -q \"200 OK\"' || exit 1"
-# --health-cmd="curl -f http://localhost:4005/health || exit 1"
           --health-interval=10s
           --health-timeout=2s
           --health-retries=20
