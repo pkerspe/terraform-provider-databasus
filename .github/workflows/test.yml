@@ -69,7 +69,7 @@ jobs:
           --health-cmd="curl -f http://localhost:4005/health || exit 1"
           --health-interval=5s
           --health-timeout=2s
-          --health-retries=10
+          --health-retries=20
       db:
         image: postgres:17
         ports:
