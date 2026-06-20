@@ -20,7 +20,6 @@ type StorageS3ResourceModel struct {
 	Id            types.String `tfsdk:"id"`
 	Name          types.String `tfsdk:"name"`
 	WorkspaceId   types.String `tfsdk:"workspace_id"`
-	IsSystem      types.Bool   `tfsdk:"is_system"`
 	LastSaveError types.String `tfsdk:"last_save_error"`
 	// storage specific fields
 	S3AccessKey             types.String `tfsdk:"s3_access_key"`
@@ -39,7 +38,6 @@ func MapResponseToStorageS3ResourceModel(response *StorageS3ResponseModel, data 
 	data.Id = types.StringValue(response.Id)
 	data.Name = types.StringValue(response.Name)
 	data.WorkspaceId = types.StringValue(response.WorkspaceId)
-	data.IsSystem = types.BoolValue(response.IsSystem)
 	data.LastSaveError = types.StringValue(response.LastSaveError)
 	data.S3Bucket = types.StringValue(response.S3Storage.S3Bucket)
 	data.S3Endpoint = types.StringValue(response.S3Storage.S3Endpoint)
@@ -59,7 +57,6 @@ type StorageS3ResponseModel struct {
 	Id            string                        `json:"id"`
 	Name          string                        `json:"name"`
 	WorkspaceId   string                        `json:"workspaceId"`
-	IsSystem      bool                          `json:"isSystem"`
 	S3Storage     StorageS3DetailsResponseModel `json:"s3Storage"`
 	LastSaveError string                        `json:"lastSaveError"`
 }
@@ -80,7 +77,6 @@ type StorageS3DetailsResponseModel struct {
 // internal helper to transform Model to map that can be used in request body.
 func marshallStorageS3ResourceModel(data StorageS3ResourceModel) map[string]any {
 	body := map[string]any{
-		"isSystem":      data.IsSystem.ValueBool(),
 		"lastSaveError": "",
 		"name":          data.Name.ValueString(),
 		"type":          "S3",

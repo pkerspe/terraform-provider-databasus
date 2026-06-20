@@ -39,7 +39,6 @@ resource "databasus_users_settings" "new_settings" {
 resource "databasus_storage_s3" "new_s3_storage" {
   name                        = "itest-s3-storage"
   workspace_id                = resource.databasus_workspace.itest_generated_workspace.id
-  is_system                   = true
   s3_access_key               = "SKFHJSKJLHDF-SDFDFDFDF-DFDFDSFD"
   s3_secret_key               = "SECRET-SKFHJSKJLHDF-SDFDFDFDF-DFDFDSFD"
   s3_bucket                   = "bucketname"

@@ -20,7 +20,6 @@ resource "databasus_workspace" "example" {
 resource "databasus_storage_s3" "example" {
   name                        = "my-s3-storage"
   workspace_id                = resource.databasus_workspace.example.id
-  is_system                   = true
   s3_access_key               = "YOUR S3 ACCESS KEY"
   s3_secret_key               = "YOUR S3 SECRET KEY"
   s3_bucket                   = "bucketname"
@@ -49,7 +48,6 @@ resource "databasus_storage_s3" "example" {
 
 ### Optional
 
-- `is_system` (Boolean) isSystem flag from databasus (no description available in Databasus REST API)
 - `s3_endpoint` (String) Custom S3-compatible endpoint URL (optional, leave empty for AWS S3)
 - `s3_prefix` (String) Optional prefix for all object keys (e.g., 'backups/' or 'my_team/'). May not work with some S3-compatible storages. Cannot be changed after creation (otherwise backups will be lost)
 - `s3_storage_class` (String) S3 storage class for uploaded objects. Leave empty to use Standard storage class. Some providers offer cheaper classes like One Zone IA. Do not use Glacier/Deep Archive — files must be immediately accessible for restores

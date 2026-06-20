@@ -24,7 +24,6 @@ resource "databasus_workspace" "test" {
 resource "databasus_storage_s3" "test" {
   name                        = "test-s3-storage"
   workspace_id                = resource.databasus_workspace.test.id
-  is_system                   = true
   s3_access_key               = "YOUR S3 ACCESS KEY"
   s3_secret_key               = "YOUR S3 SECRET KEY"
   s3_bucket                   = "testbucket"
@@ -39,7 +38,6 @@ resource "databasus_storage_s3" "test" {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("databasus_storage_s3.test", "name", "test-s3-storage"),
 					resource.TestCheckResourceAttrSet("databasus_storage_s3.test", "workspace_id"),
-					resource.TestCheckResourceAttr("databasus_storage_s3.test", "is_system", "true"),
 					resource.TestCheckResourceAttr("databasus_storage_s3.test", "s3_bucket", "testbucket"),
 					resource.TestCheckResourceAttr("databasus_storage_s3.test", "s3_endpoint", "http://localhost"),
 					resource.TestCheckResourceAttr("databasus_storage_s3.test", "s3_prefix", ""),

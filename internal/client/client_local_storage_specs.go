@@ -47,7 +47,6 @@ type StorageLocalDetailsResponseModel struct {
 // internal helper to transform Model to map that can be used in request body.
 func marshallStorageLocalResourceModel(data StorageLocalResourceModel) map[string]any {
 	body := map[string]any{
-		"isSystem":      false,
 		"lastSaveError": "",
 		"name":          data.Name.ValueString(),
 		"type":          "LOCAL",

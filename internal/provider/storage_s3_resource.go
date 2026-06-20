@@ -47,10 +47,6 @@ func (r *StorageS3Resource) Schema(ctx context.Context, req resource.SchemaReque
 				Required:            true,
 				MarkdownDescription: "The id of the workspace the storage belongs to",
 			},
-			"is_system": schema.BoolAttribute{
-				Optional:            true,
-				MarkdownDescription: "isSystem flag from databasus (no description available in Databasus REST API)",
-			},
 			"s3_access_key": schema.StringAttribute{
 				Required:            true,
 				Sensitive:           true,
