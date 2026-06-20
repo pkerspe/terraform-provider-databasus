@@ -77,7 +77,7 @@ jobs:
         env:
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: admin
-          POSTGRES_DB: test_db
+          POSTGRES_DB: admin
         options: >-
           --health-cmd="pg_isready -U admin"
           --health-interval=5s
@@ -142,6 +142,9 @@ jobs:
           done
           echo "Service did not start in time"
           exit 1
+      - name: Create test_db database
+        run: |
+          PGPASSWORD=admin psql -h localhost -U admin -d admin -c "CREATE DATABASE test_db;"
 
       - name: Set admin password in container
         run: |
