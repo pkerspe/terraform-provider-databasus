@@ -65,6 +65,12 @@ jobs:
         image: databasus/databasus:latest
         ports:
           - 4005:4005
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: admin
+          DB_HOST: db
+          DB_PORT: "5432"
         options: >-
           --health-cmd="bash -c 'exec 3<>/dev/tcp/localhost/4005 && echo -e \"GET /health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3 && cat <&3 | grep -q \"200 OK\"' || exit 1"
           --health-interval=10s
