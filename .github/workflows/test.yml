@@ -72,7 +72,7 @@ jobs:
           DB_HOST: db
           DB_PORT: "5432"
         options: >-
-          --health-cmd="bash -c 'exec 3<>/dev/tcp/localhost/4005 && echo -e \"GET /health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3 && cat <&3 | grep -q \"200 OK\"' || exit 1"
+          --health-cmd="bash -c 'exec 3<>/dev/tcp/localhost/4005 && echo -e \"GET /api/v1/system/health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3 && cat <&3 | grep -q \"200 OK\"' || exit 1"
           --health-interval=10s
           --health-timeout=2s
           --health-retries=20
@@ -142,7 +142,7 @@ jobs:
       - name: Wait for service
         run: |
           for i in {1..20}; do
-            curl -s http://localhost:4005/health && exit 0
+            curl -s http://localhost:4005/api/v1/system/health && exit 0
             echo "Waiting for databasus service..."
             sleep 3
           done
@@ -151,6 +151,11 @@ jobs:
       - name: Create test_db database
         run: |
           PGPASSWORD=admin psql -h localhost -U admin -d admin -c "CREATE DATABASE test_db;"
+
+      - name: List admin users
+        run: |
+          docker exec ${{ job.services.databasus.id }} \
+            ./main --list-admins
 
       - name: Set admin password in container
         run: |
