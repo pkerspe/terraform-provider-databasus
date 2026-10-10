@@ -152,15 +152,15 @@ jobs:
         run: |
           PGPASSWORD=admin psql -h localhost -U admin -d admin -c "CREATE DATABASE test_db;"
 
+      - name: create admin user and password in container
+        run: |
+          docker exec ${{ job.services.databasus.id }} \
+            ./main --create-user --email="admin@localhost" --password="supersecret123" --role=admin --name=admin
+
       - name: List admin users
         run: |
           docker exec ${{ job.services.databasus.id }} \
             ./main --list-admins
-
-      - name: Set admin password in container
-        run: |
-          docker exec ${{ job.services.databasus.id }} \
-            ./main --new-password="supersecret123" --email="admin"
 
       - name: Copy nginx config
         run: |
