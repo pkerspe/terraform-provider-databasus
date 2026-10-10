@@ -14,7 +14,7 @@ const (
 	ProviderConfig = `
 provider "databasus" {
   baseurl = "http://localhost:4005/api/v1"
-  email   = "admin"
+  email   = "admin@localhost"
   password = "supersecret123"
 }
 `
