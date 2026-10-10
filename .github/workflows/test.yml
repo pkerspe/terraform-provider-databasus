@@ -155,7 +155,7 @@ jobs:
       - name: create admin user and password in container
         run: |
           docker exec ${{ job.services.databasus.id }} \
-            ./main --create-user --email="admin@localhost" --password="supersecret123" --role=admin --name=admin
+            ./main --create-user --email="admin@local.host" --password="supersecret123" --role=admin --name=admin
 
       - name: List admin users
         run: |
