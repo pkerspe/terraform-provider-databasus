@@ -104,5 +104,8 @@ func (c *DatabasusClient) UpdateWorkspace(ctx context.Context, id string, name s
 }
 
 func (c *DatabasusClient) DeleteWorkspace(ctx context.Context, id string) error {
-	return c.doRequest(ctx, "DELETE", "/workspaces/"+id, nil, nil)
+	if err := c.doRequest(ctx, "DELETE", "/workspaces/"+id, nil, nil); err != nil {
+		return err
+	}
+	return nil
 }
