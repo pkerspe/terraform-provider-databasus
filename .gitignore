@@ -39,3 +39,5 @@ go.work.sum
 docker_compose/databasus-data
 examples/**/terraform.tfstate
 examples/**/terraform.tfstate.*
+
+.DS_Store
