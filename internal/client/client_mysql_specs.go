@@ -12,14 +12,12 @@ import (
 )
 
 /*******************************************************
-*	 MySQL Database CRUD functions and model definitions
+* MySQL Database CRUD functions and model definitions
 ********************************************************/
 
 type DatabaseMySqlResourceModel struct {
-	// database generic fields
-	Id   types.String `tfsdk:"id"`
-	Name types.String `tfsdk:"name"`
-	// DatabaseId     types.String `tfsdk:"database_id"`
+	Id          types.String `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
 	WorkspaceId types.String `tfsdk:"workspace_id"`
 	Database    types.String `tfsdk:"database"`
 	Host        types.String `tfsdk:"host"`
@@ -33,98 +31,78 @@ func MapResponseToDatabaseMySqlResourceModel(response *DatabaseMySqlResponseMode
 	data.Id = types.StringValue(response.Id)
 	data.Name = types.StringValue(response.Name)
 	data.WorkspaceId = types.StringValue(response.WorkspaceId)
-	data.Database = types.StringValue(response.MySql.Database)
-	data.Host = types.StringValue(response.MySql.Host)
-	data.IsHttps = types.BoolValue(response.MySql.IsHttps)
-	data.Port = types.Int32Value(response.MySql.Port)
-	// username and password are encrypted by databasus, we just ignore those for now since we could not detect changes anyways
+	data.Database = types.StringValue(response.Settings.Database)
+	data.Host = types.StringValue(response.Settings.Host)
+	data.IsHttps = types.BoolValue(response.Settings.IsHttps)
+	data.Port = types.Int32Value(response.Settings.Port)
 }
 
 type DatabaseMySqlResponseModel struct {
-	Id          string                            `json:"id"`
-	Name        string                            `json:"name"`
-	WorkspaceId string                            `json:"workspaceId"`
-	Type        string                            `json:"type"`
-	MySql       DatabaseMySqlDetailsResponseModel `json:"mysql"`
+	Id          string                         `json:"id"`
+	Name        string                         `json:"name"`
+	WorkspaceId string                         `json:"workspaceId"`
+	Settings    DatabaseMySqlDetailsResponseModel `json:"settings"`
+	NotifierIds []string                       `json:"notifierIds"`
 }
 
 type DatabaseMySqlDetailsResponseModel struct {
-	Database   string `json:"database"`
-	DatabaseId string `json:"databaseId"`
-	Host       string `json:"host"`
-	Id         string `json:"id"`
-	IsHttps    bool   `json:"isHttps"`
-	Password   string `json:"password"`
-	Port       int32  `json:"port"`
-	Privileges string `json:"privileges"`
-	Username   string `json:"username"`
-	Version    string `json:"version"`
+	Type          string `json:"type"`
+	Database      string `json:"database"`
+	Host          string `json:"host"`
+	Port          int32  `json:"port"`
+	Username      string `json:"username"`
+	Password      string `json:"password"`
+	IsHttps       bool   `json:"isHttps"`
 }
 
-// internal helper to transform Model to map that can be used in request body.
 func marshallDatabaseMySqlResourceModel(data DatabaseMySqlResourceModel) map[string]any {
-
-	body := map[string]any{
-		"isAgentTokenGenerated": true,
-		"name":                  data.Name.ValueString(),
-		"type":                  "MYSQL",
-		"workspaceId":           data.WorkspaceId.ValueString(),
-		"mysql": map[string]any{
-			"database": data.Database.ValueString(),
-			"host":     data.Host.ValueString(),
-			"port":     data.Port.ValueInt32(),
-			"username": data.Username.ValueString(),
-			"password": data.Password.ValueString(),
-			"isHttps":  data.IsHttps.ValueBool(),
+	return map[string]any{
+		"workspaceId": data.WorkspaceId.ValueString(),
+		"name":        data.Name.ValueString(),
+		"notifierIds": []string{},
+		"settings": map[string]any{
+			"type":       "MYSQL",
+			"host":       data.Host.ValueString(),
+			"port":       data.Port.ValueInt32(),
+			"username":   data.Username.ValueString(),
+			"password":   data.Password.ValueString(),
+			"database":   data.Database.ValueString(),
+			"isHttps":    data.IsHttps.ValueBool(),
+			"sshTunnel":  map[string]any{"isEnabled": false},
+			"excludeTables": []string{},
 		},
 	}
-	return body
 }
 
 func (c *DatabasusClient) CreateDatabaseMySql(ctx context.Context, data DatabaseMySqlResourceModel) (*DatabaseMySqlResponseModel, error) {
 	var result DatabaseMySqlResponseModel
 	body := marshallDatabaseMySqlResourceModel(data)
-
 	b, _ := json.Marshal(body)
-	err := c.doRequest(ctx, "POST", "/databases/create", bytes.NewBuffer(b), &result)
-	if err != nil {
+	if err := c.doRequest(ctx, "POST", "/databases", bytes.NewBuffer(b), &result); err != nil {
 		return nil, err
 	}
-
 	return &result, nil
 }
 
-func (c *DatabasusClient) GetDatabaseMySql(ctx context.Context, id string) (resultModel *DatabaseMySqlResponseModel, errorD *ErrorDetails) {
+func (c *DatabasusClient) GetDatabaseMySql(ctx context.Context, id string) (*DatabaseMySqlResponseModel, *ErrorDetails) {
 	var result DatabaseMySqlResponseModel
-
-	err := c.doRequest(ctx, "GET", "/databases/"+id, nil, &result)
-	if err != nil {
+	if err := c.doRequest(ctx, "GET", "/databases/"+id, nil, &result); err != nil {
 		return nil, err
 	}
-
 	return &result, nil
 }
 
 func (c *DatabasusClient) UpdateDatabaseMySql(ctx context.Context, id string, data DatabaseMySqlResourceModel) (*DatabaseMySqlResponseModel, error) {
 	var result DatabaseMySqlResponseModel
-
 	body := marshallDatabaseMySqlResourceModel(data)
-	body["id"] = id
-
-	b, _ := json.Marshal(body)
-	err := c.doRequest(ctx, "POST", "/databases/update", bytes.NewBuffer(b), &result)
-	if err != nil {
+	delete(body, "workspaceId")
+	b, _ := json.Marshal(map[string]any{"name": body["name"], "settings": body["settings"], "notifierIds": []string{}})
+	if err := c.doRequest(ctx, "PUT", "/databases/"+id, bytes.NewBuffer(b), &result); err != nil {
 		return nil, err
 	}
-
 	return &result, nil
 }
 
-// Delete the configuration.
 func (c *DatabasusClient) DeleteDatabaseMySql(ctx context.Context, id string) error {
-	err := c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil)
-	if err != nil {
-		return err
-	}
-	return nil
+	return c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil)
 }

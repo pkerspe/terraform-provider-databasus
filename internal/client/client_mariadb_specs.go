@@ -12,14 +12,12 @@ import (
 )
 
 /*******************************************************
-*	MariaDB Database CRUD functions and model definitions
+* MariaDB Database CRUD functions and model definitions
 ********************************************************/
 
 type DatabaseMariaDbResourceModel struct {
-	// database generic fields
-	Id   types.String `tfsdk:"id"`
-	Name types.String `tfsdk:"name"`
-	// DatabaseId     types.String `tfsdk:"database_id"`
+	Id            types.String `tfsdk:"id"`
+	Name          types.String `tfsdk:"name"`
 	WorkspaceId   types.String `tfsdk:"workspace_id"`
 	Database      types.String `tfsdk:"database"`
 	Host          types.String `tfsdk:"host"`
@@ -34,102 +32,82 @@ func MapResponseToDatabaseMariaDbResourceModel(response *DatabaseMariaDbResponse
 	data.Id = types.StringValue(response.Id)
 	data.Name = types.StringValue(response.Name)
 	data.WorkspaceId = types.StringValue(response.WorkspaceId)
-	data.Database = types.StringValue(response.MariaDb.Database)
-	data.Host = types.StringValue(response.MariaDb.Host)
-	data.IsHttps = types.BoolValue(response.MariaDb.IsHttps)
-	data.Port = types.Int32Value(response.MariaDb.Port)
-	data.ExcludeEvents = types.BoolValue(response.MariaDb.IsExcludeEvents)
-	// TODO: CHECK how to map: data.IncludeSchemas = types.ListValue(types.String(), response.MariaDb.IncludeSchemas)
-	// username and password are encrypted by databasus, we just ignore those for now since we could not detect changes anyways
+	data.Database = types.StringValue(response.Settings.Database)
+	data.Host = types.StringValue(response.Settings.Host)
+	data.IsHttps = types.BoolValue(response.Settings.IsHttps)
+	data.Port = types.Int32Value(response.Settings.Port)
+	data.ExcludeEvents = types.BoolValue(response.Settings.IsExcludeEvents)
 }
 
 type DatabaseMariaDbResponseModel struct {
-	Id          string                              `json:"id"`
-	Name        string                              `json:"name"`
-	WorkspaceId string                              `json:"workspaceId"`
-	Type        string                              `json:"type"`
-	MariaDb     DatabaseMariaDbDetailsResponseModel `json:"mariaDb"`
+	Id          string                           `json:"id"`
+	Name        string                           `json:"name"`
+	WorkspaceId string                           `json:"workspaceId"`
+	Settings    DatabaseMariaDbDetailsResponseModel `json:"settings"`
+	NotifierIds []string                         `json:"notifierIds"`
 }
 
 type DatabaseMariaDbDetailsResponseModel struct {
+	Type            string `json:"type"`
 	Database        string `json:"database"`
-	DatabaseId      string `json:"databaseId"`
 	Host            string `json:"host"`
-	Id              string `json:"id"`
-	IsExcludeEvents bool   `json:"isExcludeEvents"`
-	IsHttps         bool   `json:"isHttps"`
-	Password        string `json:"password"`
 	Port            int32  `json:"port"`
 	Username        string `json:"username"`
-	Privileges      string `json:"privileges"`
-	Version         string `json:"version"`
+	Password        string `json:"password"`
+	IsHttps         bool   `json:"isHttps"`
+	IsExcludeEvents bool   `json:"isExcludeEvents"`
 }
 
-// internal helper to transform Model to map that can be used in request body.
 func marshallDatabaseMariaDbResourceModel(data DatabaseMariaDbResourceModel) map[string]any {
-
-	body := map[string]any{
-		"isAgentTokenGenerated": true,
-		"name":                  data.Name.ValueString(),
-		"type":                  "MARIADB",
-		"workspaceId":           data.WorkspaceId.ValueString(),
-		"mariaDb": map[string]any{
-			"database":        data.Database.ValueString(),
-			"host":            data.Host.ValueString(),
-			"port":            data.Port.ValueInt32(),
-			"username":        data.Username.ValueString(),
-			"password":        data.Password.ValueString(),
-			"isHttps":         data.IsHttps.ValueBool(),
-			"isExcludeEvents": data.ExcludeEvents.ValueBool(),
+	return map[string]any{
+		"workspaceId": data.WorkspaceId.ValueString(),
+		"name":        data.Name.ValueString(),
+		"notifierIds": []string{},
+		"settings": map[string]any{
+			"type":             "MARIADB",
+			"host":             data.Host.ValueString(),
+			"port":             data.Port.ValueInt32(),
+			"username":         data.Username.ValueString(),
+			"password":         data.Password.ValueString(),
+			"database":         data.Database.ValueString(),
+			"isHttps":          data.IsHttps.ValueBool(),
+			"sshTunnel":        map[string]any{"isEnabled": false},
+			"excludeTables":    []string{},
+			"isExcludeEvents":  data.ExcludeEvents.ValueBool(),
+			"isSkipGaleraDisable": false,
 		},
 	}
-	return body
 }
 
 func (c *DatabasusClient) CreateDatabaseMariaDb(ctx context.Context, data DatabaseMariaDbResourceModel) (*DatabaseMariaDbResponseModel, error) {
 	var result DatabaseMariaDbResponseModel
 	body := marshallDatabaseMariaDbResourceModel(data)
-
 	b, _ := json.Marshal(body)
-	err := c.doRequest(ctx, "POST", "/databases/create", bytes.NewBuffer(b), &result)
-	if err != nil {
+	if err := c.doRequest(ctx, "POST", "/databases", bytes.NewBuffer(b), &result); err != nil {
 		return nil, err
 	}
-
 	return &result, nil
 }
 
-func (c *DatabasusClient) GetDatabaseMariaDb(ctx context.Context, id string) (resultModel *DatabaseMariaDbResponseModel, errorD *ErrorDetails) {
+func (c *DatabasusClient) GetDatabaseMariaDb(ctx context.Context, id string) (*DatabaseMariaDbResponseModel, *ErrorDetails) {
 	var result DatabaseMariaDbResponseModel
-
-	err := c.doRequest(ctx, "GET", "/databases/"+id, nil, &result)
-	if err != nil {
+	if err := c.doRequest(ctx, "GET", "/databases/"+id, nil, &result); err != nil {
 		return nil, err
 	}
-
 	return &result, nil
 }
 
 func (c *DatabasusClient) UpdateDatabaseMariaDb(ctx context.Context, id string, data DatabaseMariaDbResourceModel) (*DatabaseMariaDbResponseModel, error) {
 	var result DatabaseMariaDbResponseModel
-
 	body := marshallDatabaseMariaDbResourceModel(data)
-	body["id"] = id
-
-	b, _ := json.Marshal(body)
-	err := c.doRequest(ctx, "POST", "/databases/update", bytes.NewBuffer(b), &result)
-	if err != nil {
+	delete(body, "workspaceId")
+	b, _ := json.Marshal(map[string]any{"name": body["name"], "settings": body["settings"], "notifierIds": []string{}})
+	if err := c.doRequest(ctx, "PUT", "/databases/"+id, bytes.NewBuffer(b), &result); err != nil {
 		return nil, err
 	}
-
 	return &result, nil
 }
 
-// Delete the configuration.
 func (c *DatabasusClient) DeleteDatabaseMariaDb(ctx context.Context, id string) error {
-	err := c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil)
-	if err != nil {
-		return err
-	}
-	return nil
+	return c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil)
 }
