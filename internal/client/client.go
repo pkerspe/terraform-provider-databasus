@@ -55,34 +55,48 @@ func NewDatabasusClient(baseURL, token string, verifySsl bool) *DatabasusClient 
 
 func GetJWT(baseURL, email, password string, verifySsl bool) (string, error) {
 	body, err := json.Marshal(map[string]string{"email": email, "password": password})
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	transport := http.DefaultTransport
-	if !verifySsl { transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}} }
+	if !verifySsl {
+		transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+	}
 	httpClient := &http.Client{Transport: &CustomRoundTripper{Transport: transport, Token: ""}}
 	req, err := http.NewRequest(http.MethodPost, baseURL+"/sessions", bytes.NewBuffer(body))
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := httpClient.Do(req)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 	defer resp.Body.Close()
 	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return "", fmt.Errorf("sign-in failed: status=%d body=%s", resp.StatusCode, string(responseBody))
 	}
 
 	var result struct {
 		Outcome string `json:"outcome"`
-		Token string `json:"token"`
-		UserId string `json:"userId"`
+		Token   string `json:"token"`
+		UserId  string `json:"userId"`
 	}
-	if err := json.Unmarshal(responseBody, &result); err != nil { return "", err }
+	if err := json.Unmarshal(responseBody, &result); err != nil {
+		return "", err
+	}
 	if result.Outcome != "" && result.Outcome != "COMPLETED" {
 		return "", fmt.Errorf("sign-in requires an additional verification step: outcome=%s", result.Outcome)
 	}
-	if result.Token == "" { return "", fmt.Errorf("sign-in returned no session token") }
+	if result.Token == "" {
+		return "", fmt.Errorf("sign-in returned no session token")
+	}
 	return result.Token, nil
 }
 
@@ -93,28 +107,47 @@ func (c *DatabasusClient) doRequest(ctx context.Context, method, path string, bo
 	if body != nil {
 		var err error
 		reqBodyBytes, err = io.ReadAll(body)
-		if err != nil { errorDetails.ErrorInst = fmt.Errorf("failed to read request body: %w", err); return &errorDetails }
+		if err != nil {
+			errorDetails.ErrorInst = fmt.Errorf("failed to read request body: %w", err)
+			return &errorDetails
+		}
 	}
 	if c.Debug {
 		fmt.Fprintf(os.Stderr, "[DATABASUS DEBUG] --> %s %s\n", method, url)
-		if len(reqBodyBytes) > 0 { fmt.Fprintf(os.Stderr, "[DATABASUS DEBUG]     Request body: %s\n", string(reqBodyBytes)) }
+		if len(reqBodyBytes) > 0 {
+			fmt.Fprintf(os.Stderr, "[DATABASUS DEBUG]     Request body: %s\n", string(reqBodyBytes))
+		}
 	}
 
 	var reqReader io.Reader
-	if len(reqBodyBytes) > 0 { reqReader = bytes.NewReader(reqBodyBytes) }
+	if len(reqBodyBytes) > 0 {
+		reqReader = bytes.NewReader(reqBodyBytes)
+	}
 	req, err := http.NewRequestWithContext(ctx, method, url, reqReader)
-	if err != nil { return &ErrorDetails{ErrorInst: fmt.Errorf("failed to create request: %w", err)} }
-	if len(reqBodyBytes) > 0 { req.Header.Set("Content-Type", "application/json") }
+	if err != nil {
+		return &ErrorDetails{ErrorInst: fmt.Errorf("failed to create request: %w", err)}
+	}
+	if len(reqBodyBytes) > 0 {
+		req.Header.Set("Content-Type", "application/json")
+	}
 
 	resp, err := c.HTTP.Do(req)
-	if err != nil { errorDetails.ErrorInst = fmt.Errorf("request failed: %w", err); return &errorDetails }
+	if err != nil {
+		errorDetails.ErrorInst = fmt.Errorf("request failed: %w", err)
+		return &errorDetails
+	}
 	defer resp.Body.Close()
 
 	respBodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil { errorDetails.ErrorInst = fmt.Errorf("failed to read response body: %w", err); return &errorDetails }
+	if err != nil {
+		errorDetails.ErrorInst = fmt.Errorf("failed to read response body: %w", err)
+		return &errorDetails
+	}
 	if c.Debug {
 		fmt.Fprintf(os.Stderr, "[DATABASUS DEBUG] <-- %d %s\n", resp.StatusCode, url)
-		if len(respBodyBytes) > 0 { fmt.Fprintf(os.Stderr, "[DATABASUS DEBUG]     Response body: %s\n", string(respBodyBytes)) }
+		if len(respBodyBytes) > 0 {
+			fmt.Fprintf(os.Stderr, "[DATABASUS DEBUG]     Response body: %s\n", string(respBodyBytes))
+		}
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		errorDetails.ResponseBody = string(respBodyBytes)

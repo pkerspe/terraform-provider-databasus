@@ -13,25 +13,25 @@ import (
 
 type SettingsResponseModel struct {
 	Id                                string `json:"id"`
-	IsAllowExternalRegistrations      bool `json:"isAllowExternalRegistrations"`
-	IsAllowMemberInvitations          bool `json:"isAllowMemberInvitations"`
-	IsMemberAllowedToCreateWorkspaces bool `json:"isMemberAllowedToCreateWorkspaces"`
-	IsTwoFactorAuthRequired           bool `json:"isTwoFactorAuthRequired"`
-	IsEmailConfigured                 bool `json:"isEmailConfigured"`
+	IsAllowExternalRegistrations      bool   `json:"isAllowExternalRegistrations"`
+	IsAllowMemberInvitations          bool   `json:"isAllowMemberInvitations"`
+	IsMemberAllowedToCreateWorkspaces bool   `json:"isMemberAllowedToCreateWorkspaces"`
+	IsTwoFactorAuthRequired           bool   `json:"isTwoFactorAuthRequired"`
+	IsEmailConfigured                 bool   `json:"isEmailConfigured"`
 }
 
 type SettingsDataSourceModel struct {
 	Id                                types.String `tfsdk:"id"`
-	IsAllowExternalRegistrations      types.Bool `tfsdk:"allow_external_registrations"`
-	IsAllowMemberInvitations          types.Bool `tfsdk:"allow_member_invitations"`
-	IsMemberAllowedToCreateWorkspaces types.Bool `tfsdk:"member_allowed_to_create_workspaces"`
+	IsAllowExternalRegistrations      types.Bool   `tfsdk:"allow_external_registrations"`
+	IsAllowMemberInvitations          types.Bool   `tfsdk:"allow_member_invitations"`
+	IsMemberAllowedToCreateWorkspaces types.Bool   `tfsdk:"member_allowed_to_create_workspaces"`
 }
 
 type SettingsResourceModel struct {
 	Id                                types.String `tfsdk:"id"`
-	IsAllowExternalRegistrations      types.Bool `tfsdk:"allow_external_registrations"`
-	IsAllowMemberInvitations          types.Bool `tfsdk:"allow_member_invitations"`
-	IsMemberAllowedToCreateWorkspaces types.Bool `tfsdk:"member_allowed_to_create_workspaces"`
+	IsAllowExternalRegistrations      types.Bool   `tfsdk:"allow_external_registrations"`
+	IsAllowMemberInvitations          types.Bool   `tfsdk:"allow_member_invitations"`
+	IsMemberAllowedToCreateWorkspaces types.Bool   `tfsdk:"member_allowed_to_create_workspaces"`
 }
 
 func (c *DatabasusClient) CreateUsersSettings(ctx context.Context, allowExternalRegistrations bool, allowMemberInvitations bool, memberAllowedToCreateWorkspaces bool) (*SettingsResponseModel, error) {
@@ -40,22 +40,28 @@ func (c *DatabasusClient) CreateUsersSettings(ctx context.Context, allowExternal
 
 func (c *DatabasusClient) GetUsersSettings(ctx context.Context) (*SettingsResponseModel, *ErrorDetails) {
 	var result SettingsResponseModel
-	if err := c.doRequest(ctx, "GET", "/instance-settings", nil, &result); err != nil { return nil, err }
+	if err := c.doRequest(ctx, "GET", "/instance-settings", nil, &result); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 
 func (c *DatabasusClient) UpdateUsersSettings(ctx context.Context, _ string, allowExternalRegistrations bool, allowMemberInvitations bool, memberAllowedToCreateWorkspaces bool) (*SettingsResponseModel, error) {
 	current, err := c.GetUsersSettings(ctx)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	body := map[string]any{
-		"isAllowExternalRegistrations": allowExternalRegistrations,
-		"isAllowMemberInvitations": allowMemberInvitations,
+		"isAllowExternalRegistrations":      allowExternalRegistrations,
+		"isAllowMemberInvitations":          allowMemberInvitations,
 		"isMemberAllowedToCreateWorkspaces": memberAllowedToCreateWorkspaces,
-		"isTwoFactorAuthRequired": current.IsTwoFactorAuthRequired,
+		"isTwoFactorAuthRequired":           current.IsTwoFactorAuthRequired,
 	}
 	b, _ := json.Marshal(body)
 	var result SettingsResponseModel
-	if err := c.doRequest(ctx, "PUT", "/instance-settings", bytes.NewBuffer(b), &result); err != nil { return nil, err }
+	if err := c.doRequest(ctx, "PUT", "/instance-settings", bytes.NewBuffer(b), &result); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 
