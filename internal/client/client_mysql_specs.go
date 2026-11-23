@@ -38,21 +38,21 @@ func MapResponseToDatabaseMySqlResourceModel(response *DatabaseMySqlResponseMode
 }
 
 type DatabaseMySqlResponseModel struct {
-	Id          string                         `json:"id"`
-	Name        string                         `json:"name"`
-	WorkspaceId string                         `json:"workspaceId"`
+	Id          string                            `json:"id"`
+	Name        string                            `json:"name"`
+	WorkspaceId string                            `json:"workspaceId"`
 	Settings    DatabaseMySqlDetailsResponseModel `json:"settings"`
-	NotifierIds []string                       `json:"notifierIds"`
+	NotifierIds []string                          `json:"notifierIds"`
 }
 
 type DatabaseMySqlDetailsResponseModel struct {
-	Type          string `json:"type"`
-	Database      string `json:"database"`
-	Host          string `json:"host"`
-	Port          int32  `json:"port"`
-	Username      string `json:"username"`
-	Password      string `json:"password"`
-	IsHttps       bool   `json:"isHttps"`
+	Type     string `json:"type"`
+	Database string `json:"database"`
+	Host     string `json:"host"`
+	Port     int32  `json:"port"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	IsHttps  bool   `json:"isHttps"`
 }
 
 func marshallDatabaseMySqlResourceModel(data DatabaseMySqlResourceModel) map[string]any {
@@ -61,14 +61,14 @@ func marshallDatabaseMySqlResourceModel(data DatabaseMySqlResourceModel) map[str
 		"name":        data.Name.ValueString(),
 		"notifierIds": []string{},
 		"settings": map[string]any{
-			"type":       "MYSQL",
-			"host":       data.Host.ValueString(),
-			"port":       data.Port.ValueInt32(),
-			"username":   data.Username.ValueString(),
-			"password":   data.Password.ValueString(),
-			"database":   data.Database.ValueString(),
-			"isHttps":    data.IsHttps.ValueBool(),
-			"sshTunnel":  map[string]any{"isEnabled": false},
+			"type":          "MYSQL",
+			"host":          data.Host.ValueString(),
+			"port":          data.Port.ValueInt32(),
+			"username":      data.Username.ValueString(),
+			"password":      data.Password.ValueString(),
+			"database":      data.Database.ValueString(),
+			"isHttps":       data.IsHttps.ValueBool(),
+			"sshTunnel":     map[string]any{"isEnabled": false},
 			"excludeTables": []string{},
 		},
 	}
@@ -104,5 +104,8 @@ func (c *DatabasusClient) UpdateDatabaseMySql(ctx context.Context, id string, da
 }
 
 func (c *DatabasusClient) DeleteDatabaseMySql(ctx context.Context, id string) error {
-	return c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil)
+	if err := c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil); err != nil {
+		return err
+	}
+	return nil
 }

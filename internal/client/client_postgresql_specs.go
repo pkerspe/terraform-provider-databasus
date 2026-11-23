@@ -69,21 +69,21 @@ type DatabasePostgresqlResponseModel struct {
 }
 
 type DatabasePostgresqlDetailsResponseModel struct {
-	Type             string   `json:"type"`
-	Database         string   `json:"database"`
-	Host             string   `json:"host"`
-	IncludeSchemas   []string `json:"includeSchemas"`
-	SslMode          string   `json:"sslMode"`
-	SslClientCert    string   `json:"sslClientCert"`
-	SslClientKey     string   `json:"sslClientKey"`
-	SslRootCert      string   `json:"sslRootCert"`
-	Password         string   `json:"password"`
-	Port             int      `json:"port"`
-	Username         string   `json:"username"`
-	ExcludeTables    []string `json:"excludeTables"`
-	ExcludeTableData []string `json:"excludeTableData"`
-	CpuCount         int      `json:"cpuCount"`
-	IsSkipUserMappings bool   `json:"isSkipUserMappings"`
+	Type               string   `json:"type"`
+	Database           string   `json:"database"`
+	Host               string   `json:"host"`
+	IncludeSchemas     []string `json:"includeSchemas"`
+	SslMode            string   `json:"sslMode"`
+	SslClientCert      string   `json:"sslClientCert"`
+	SslClientKey       string   `json:"sslClientKey"`
+	SslRootCert        string   `json:"sslRootCert"`
+	Password           string   `json:"password"`
+	Port               int      `json:"port"`
+	Username           string   `json:"username"`
+	ExcludeTables      []string `json:"excludeTables"`
+	ExcludeTableData   []string `json:"excludeTableData"`
+	CpuCount           int      `json:"cpuCount"`
+	IsSkipUserMappings bool     `json:"isSkipUserMappings"`
 }
 
 func marshallDatabasePostgresqlResourceModel(data DatabasePostgresqlResourceModel) map[string]any {
@@ -102,21 +102,21 @@ func marshallDatabasePostgresqlResourceModel(data DatabasePostgresqlResourceMode
 		"name":        data.Name.ValueString(),
 		"notifierIds": []string{},
 		"settings": map[string]any{
-			"type":                "POSTGRES_LOGICAL",
-			"host":                data.Host.ValueString(),
-			"port":                data.Port.ValueInt32(),
-			"username":            data.Username.ValueString(),
-			"password":            data.Password.ValueString(),
-			"database":            data.Database.ValueString(),
-			"sslMode":             data.SslMode.ValueString(),
-			"sslClientCert":       data.SslClientCert.ValueString(),
-			"sslClientKey":        data.SslClientKey.ValueString(),
-			"sslRootCert":         data.SslRootCert.ValueString(),
-			"sshTunnel":           map[string]any{"isEnabled": false},
-			"includeSchemas":      includeSchemasStrings,
-			"excludeTables":       []string{},
-			"excludeTableData":    []string{},
-			"cpuCount":            1,
+			"type":               "POSTGRES_LOGICAL",
+			"host":               data.Host.ValueString(),
+			"port":               data.Port.ValueInt32(),
+			"username":           data.Username.ValueString(),
+			"password":           data.Password.ValueString(),
+			"database":           data.Database.ValueString(),
+			"sslMode":            data.SslMode.ValueString(),
+			"sslClientCert":      data.SslClientCert.ValueString(),
+			"sslClientKey":       data.SslClientKey.ValueString(),
+			"sslRootCert":        data.SslRootCert.ValueString(),
+			"sshTunnel":          map[string]any{"isEnabled": false},
+			"includeSchemas":     includeSchemasStrings,
+			"excludeTables":      []string{},
+			"excludeTableData":   []string{},
+			"cpuCount":           1,
 			"isSkipUserMappings": false,
 		},
 	}
@@ -156,5 +156,8 @@ func (c *DatabasusClient) UpdateDatabasePostgresql(ctx context.Context, id strin
 }
 
 func (c *DatabasusClient) DeleteDatabasePostgresql(ctx context.Context, id string) error {
-	return c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil)
+	if err := c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil); err != nil {
+		return err
+	}
+	return nil
 }

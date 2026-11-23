@@ -46,11 +46,11 @@ func MapResponseToDatabaseMongoDbResourceModel(response *DatabaseMongoDbResponse
 }
 
 type DatabaseMongoDbResponseModel struct {
-	Id          string                           `json:"id"`
-	Name        string                           `json:"name"`
-	WorkspaceId string                           `json:"workspaceId"`
+	Id          string                              `json:"id"`
+	Name        string                              `json:"name"`
+	WorkspaceId string                              `json:"workspaceId"`
 	Settings    DatabaseMongoDbDetailsResponseModel `json:"settings"`
-	NotifierIds []string                         `json:"notifierIds"`
+	NotifierIds []string                            `json:"notifierIds"`
 }
 
 type DatabaseMongoDbDetailsResponseModel struct {
@@ -72,18 +72,18 @@ func marshallDatabaseMongoDbResourceModel(data DatabaseMongoDbResourceModel) map
 		"name":        data.Name.ValueString(),
 		"notifierIds": []string{},
 		"settings": map[string]any{
-			"type":              "MONGODB",
-			"host":              data.Host.ValueString(),
-			"port":              data.Port.ValueInt32(),
-			"username":          data.Username.ValueString(),
-			"password":          data.Password.ValueString(),
-			"database":          data.Database.ValueString(),
-			"authDatabase":      data.AuthDatabase.ValueString(),
-			"isHttps":           data.IsHttps.ValueBool(),
-			"isSrv":             data.Srv.ValueBool(),
+			"type":               "MONGODB",
+			"host":               data.Host.ValueString(),
+			"port":               data.Port.ValueInt32(),
+			"username":           data.Username.ValueString(),
+			"password":           data.Password.ValueString(),
+			"database":           data.Database.ValueString(),
+			"authDatabase":       data.AuthDatabase.ValueString(),
+			"isHttps":            data.IsHttps.ValueBool(),
+			"isSrv":              data.Srv.ValueBool(),
 			"isDirectConnection": data.DirectConnection.ValueBool(),
-			"cpuCount":          data.CpuCount.ValueInt32(),
-			"sshTunnel":         map[string]any{"isEnabled": false},
+			"cpuCount":           data.CpuCount.ValueInt32(),
+			"sshTunnel":          map[string]any{"isEnabled": false},
 			"excludeCollections": []string{},
 		},
 	}
@@ -119,5 +119,8 @@ func (c *DatabasusClient) UpdateDatabaseMongoDb(ctx context.Context, id string, 
 }
 
 func (c *DatabasusClient) DeleteDatabaseMongoDb(ctx context.Context, id string) error {
-	return c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil)
+	if err := c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil); err != nil {
+		return err
+	}
+	return nil
 }

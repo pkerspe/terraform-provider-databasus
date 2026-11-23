@@ -40,11 +40,11 @@ func MapResponseToDatabaseMariaDbResourceModel(response *DatabaseMariaDbResponse
 }
 
 type DatabaseMariaDbResponseModel struct {
-	Id          string                           `json:"id"`
-	Name        string                           `json:"name"`
-	WorkspaceId string                           `json:"workspaceId"`
+	Id          string                              `json:"id"`
+	Name        string                              `json:"name"`
+	WorkspaceId string                              `json:"workspaceId"`
 	Settings    DatabaseMariaDbDetailsResponseModel `json:"settings"`
-	NotifierIds []string                         `json:"notifierIds"`
+	NotifierIds []string                            `json:"notifierIds"`
 }
 
 type DatabaseMariaDbDetailsResponseModel struct {
@@ -64,16 +64,16 @@ func marshallDatabaseMariaDbResourceModel(data DatabaseMariaDbResourceModel) map
 		"name":        data.Name.ValueString(),
 		"notifierIds": []string{},
 		"settings": map[string]any{
-			"type":             "MARIADB",
-			"host":             data.Host.ValueString(),
-			"port":             data.Port.ValueInt32(),
-			"username":         data.Username.ValueString(),
-			"password":         data.Password.ValueString(),
-			"database":         data.Database.ValueString(),
-			"isHttps":          data.IsHttps.ValueBool(),
-			"sshTunnel":        map[string]any{"isEnabled": false},
-			"excludeTables":    []string{},
-			"isExcludeEvents":  data.ExcludeEvents.ValueBool(),
+			"type":                "MARIADB",
+			"host":                data.Host.ValueString(),
+			"port":                data.Port.ValueInt32(),
+			"username":            data.Username.ValueString(),
+			"password":            data.Password.ValueString(),
+			"database":            data.Database.ValueString(),
+			"isHttps":             data.IsHttps.ValueBool(),
+			"sshTunnel":           map[string]any{"isEnabled": false},
+			"excludeTables":       []string{},
+			"isExcludeEvents":     data.ExcludeEvents.ValueBool(),
 			"isSkipGaleraDisable": false,
 		},
 	}
@@ -109,5 +109,8 @@ func (c *DatabasusClient) UpdateDatabaseMariaDb(ctx context.Context, id string, 
 }
 
 func (c *DatabasusClient) DeleteDatabaseMariaDb(ctx context.Context, id string) error {
-	return c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil)
+	if err := c.doRequest(ctx, "DELETE", "/databases/"+id, nil, nil); err != nil {
+		return err
+	}
+	return nil
 }
