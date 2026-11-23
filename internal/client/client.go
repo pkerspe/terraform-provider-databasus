@@ -83,35 +83,62 @@ func GetJWT(baseURL, email, password string, verifySsl bool) (string, error) {
 		"password": password,
 	}
 
-	b, _ := json.Marshal(body)
-
-	// Create a new HTTP client with SSL verification disabled if verifySsl is false
-	httpClient := &http.Client{
-		Transport: &CustomRoundTripper{
-			Transport: http.DefaultTransport,
-			Token:     "",
-		},
+	b, err := json.Marshal(body)
+	if err != nil {
+		return "", err
 	}
 
+	transport := http.DefaultTransport
 	if !verifySsl {
-		httpClient.Transport = &http.Transport{
+		transport = &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
 	}
 
-	resp, err := http.Post(baseURL+"/users/signin", "application/json", bytes.NewBuffer(b))
+	httpClient := &http.Client{
+		Transport: &CustomRoundTripper{
+			Transport: transport,
+			Token:     "",
+		},
+	}
+
+	req, err := http.NewRequest(http.MethodPost, baseURL+"/sessions", bytes.NewBuffer(b))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
 
-	var result struct {
-		Token  string `json:"token"`
-		UserId string `json:"userId"`
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return "", fmt.Errorf("sign-in failed: status=%d body=%s", resp.StatusCode, string(responseBody))
+	}
+
+	var result struct {
+		Outcome string `json:"outcome"`
+		Token   string `json:"token"`
+		UserId  string `json:"userId"`
+	}
+
+	if err := json.Unmarshal(responseBody, &result); err != nil {
 		return "", err
+	}
+
+	if result.Outcome != "" && result.Outcome != "COMPLETED" {
+		return "", fmt.Errorf("sign-in requires an additional verification step: outcome=%s", result.Outcome)
+	}
+
+	if result.Token == "" {
+		return "", fmt.Errorf("sign-in returned no session token")
 	}
 
 	return result.Token, nil
@@ -146,8 +173,10 @@ func (c *DatabasusClient) doRequest(ctx context.Context, method, path string, bo
 
 	req, err := http.NewRequestWithContext(ctx, method, url, reqReader)
 	if err != nil {
-		errorDetails.ErrorInst = fmt.Errorf("failed to create request: %w", err)
-		return &errorDetails
+		return &ErrorDetails{ErrorInst: fmt.Errorf("failed to create request: %w", err)}
+	}
+	if len(reqBodyBytes) > 0 {
+		req.Header.Set("Content-Type", "application/json")
 	}
 
 	resp, err := c.HTTP.Do(req)
