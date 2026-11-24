@@ -7,13 +7,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 /*******************************************************
-*	Backup Config CRUD functions and model definitions
-********************************************************/
+* Backup Config CRUD functions and model definitions
+*******************************************************/
 
 type BackupConfigResourceModel struct {
 	Enabled                          types.Bool   `tfsdk:"enabled"`
@@ -40,144 +41,154 @@ type BackupConfigResourceModel struct {
 
 func MapResponseToBackupConfigResourceModel(response *BackupConfigResponseModel, data *BackupConfigResourceModel) {
 	data.DatabaseId = types.StringValue(response.DatabaseId)
-	data.StorageId = types.StringValue(response.Storage.Id)
-	data.Enabled = types.BoolValue(response.Enabled)
-	data.Interval = types.StringValue(response.BackupInterval.Interval)
-	data.TimeOfDay = types.StringValue(response.BackupInterval.TimeOfDay)
-	data.Weekday = types.Int32Value(response.BackupInterval.Weekday)
-	data.DayOfMonth = types.Int32Value(response.BackupInterval.DayOfMonth)
-	data.CronExpression = types.StringValue(response.BackupInterval.CronExpression)
-	data.MaxFailedRetryCount = types.Int32Value(response.MaxFailedRetryCount)
+	if response.StorageId == nil {
+		data.StorageId = types.StringValue("")
+	} else {
+		data.StorageId = types.StringValue(*response.StorageId)
+	}
+	data.Enabled = types.BoolValue(response.IsBackupsEnabled)
+	data.Interval = types.StringValue(response.Settings.Schedule.Type)
+	data.TimeOfDay = types.StringValue(response.Settings.Schedule.TimeOfDay)
+	data.Weekday = types.Int32Value(response.Settings.Schedule.Weekday)
+	data.DayOfMonth = types.Int32Value(response.Settings.Schedule.DayOfMonth)
+	data.CronExpression = types.StringValue(response.Settings.Schedule.CronExpression)
+	data.MaxFailedRetryCount = types.Int32Value(response.Settings.MaxFailedTriesCount)
 	data.Encryption = types.BoolValue(response.Encryption != "NONE")
-	data.RetentionPolicyType = types.StringValue(response.RetentionPolicyType)
-	data.RetentionCount = types.Int32Value(response.RetentionCount)
-	data.RetentionTimePeriod = types.StringValue(response.RetentionTimePeriod)
-	data.RetentionGfsHours = types.Int32Value(response.RetentionGfsHours)
-	data.RetentionGfsDays = types.Int32Value(response.RetentionGfsDays)
-	data.RetentionGfsWeeks = types.Int32Value(response.RetentionGfsWeeks)
-	data.RetentionGfsMonths = types.Int32Value(response.RetentionGfsMonths)
-	data.RetentionGfsYears = types.Int32Value(response.RetentionGfsYears)
-	data.SendNotificationsOnBackupSuccess = types.BoolValue(containsString(response.SendNotificationsOn, "BACKUP_SUCCESS"))
-	data.SendNotificationsOnBackupFailure = types.BoolValue(containsString(response.SendNotificationsOn, "BACKUP_FAILED"))
+	data.RetentionPolicyType = types.StringValue(response.Settings.Retention.Policy)
+	data.RetentionCount = types.Int32Value(response.Settings.Retention.Count)
+	data.RetentionTimePeriod = types.StringValue(response.Settings.Retention.Period)
+	data.RetentionGfsHours = types.Int32Value(response.Settings.Retention.GfsHours)
+	data.RetentionGfsDays = types.Int32Value(response.Settings.Retention.GfsDays)
+	data.RetentionGfsWeeks = types.Int32Value(response.Settings.Retention.GfsWeeks)
+	data.RetentionGfsMonths = types.Int32Value(response.Settings.Retention.GfsMonths)
+	data.RetentionGfsYears = types.Int32Value(response.Settings.Retention.GfsYears)
+	data.SendNotificationsOnBackupSuccess = types.BoolValue(containsString(response.Settings.NotificationTriggers, "BACKUP_SUCCESS"))
+	data.SendNotificationsOnBackupFailure = types.BoolValue(containsString(response.Settings.NotificationTriggers, "BACKUP_FAILED"))
 }
 
 type BackupConfigResponseModel struct {
-	BackupInterval      BackupIntervalDetailsResponseModel `json:"backupInterval"`
-	DatabaseId          string                             `json:"databaseId"`
-	Enabled             bool                               `json:"isBackupsEnabled"`
-	MaxFailedRetryCount int32                              `json:"maxFailedTriesCount"`
-	IsRetryIfFailed     bool                               `json:"isRetryIfFailed"`
-	Encryption          string                             `json:"encryption"`
-	RetentionPolicyType string                             `json:"retentionPolicyType"`
-	RetentionCount      int32                              `json:"retentionCount"`
-	RetentionTimePeriod string                             `json:"retentionTimePeriod"`
-	RetentionGfsHours   int32                              `json:"retentionGfsHours"`
-	RetentionGfsDays    int32                              `json:"retentionGfsDays"`
-	RetentionGfsWeeks   int32                              `json:"retentionGfsWeeks"`
-	RetentionGfsMonths  int32                              `json:"retentionGfsMonths"`
-	RetentionGfsYears   int32                              `json:"retentionGfsYears"`
-	SendNotificationsOn []string                           `json:"sendNotificationsOn"`
-	Storage             BackupStorageDetailsResponseModel  `json:"storage"`
+	DatabaseId       string                        `json:"databaseId"`
+	IsBackupsEnabled bool                          `json:"isBackupsEnabled"`
+	StorageId        *string                       `json:"storageId"`
+	Encryption       string                        `json:"encryption"`
+	Settings         LogicalBackupSettingsResponse `json:"settings"`
 }
 
-type BackupIntervalDetailsResponseModel struct {
-	Interval       string `json:"type"`
+type LogicalBackupSettingsResponse struct {
+	Type                  string                    `json:"type"`
+	Schedule              BackupScheduleResponse    `json:"schedule"`
+	Retention             LogicalRetentionResponse  `json:"retention"`
+	IsRetryIfFailed       bool                      `json:"isRetryIfFailed"`
+	MaxFailedTriesCount   int32                     `json:"maxFailedTriesCount"`
+	NotificationTriggers  []string                  `json:"notificationTriggers"`
+}
+
+type BackupScheduleResponse struct {
+	Type           string `json:"type"`
 	TimeOfDay      string `json:"timeOfDay"`
 	Weekday        int32  `json:"weekday"`
 	DayOfMonth     int32  `json:"dayOfMonth"`
 	CronExpression string `json:"cronExpression"`
 }
 
-type BackupStorageDetailsResponseModel struct {
-	Id string `json:"id"`
+type LogicalRetentionResponse struct {
+	Policy    string `json:"policy"`
+	Period    string `json:"period"`
+	Count     int32  `json:"count"`
+	GfsHours  int32  `json:"gfsHours"`
+	GfsDays   int32  `json:"gfsDays"`
+	GfsWeeks  int32  `json:"gfsWeeks"`
+	GfsMonths int32  `json:"gfsMonths"`
+	GfsYears  int32  `json:"gfsYears"`
 }
 
 func containsString(slice []string, target string) bool {
-	for _, v := range slice {
-		if v == target {
+	for _, value := range slice {
+		if value == target {
 			return true
 		}
 	}
 	return false
 }
 
-func ternary(cond bool, a, b any) any {
-	if cond {
-		return a
-	}
-	return b
-}
-
-// internal helper to transform Model to map that can be used in request body.
 func marshallBackupConfigResourceModel(data BackupConfigResourceModel) map[string]any {
-	var notificationOptions []string
-
+	notificationTriggers := make([]string, 0, 2)
 	if data.SendNotificationsOnBackupSuccess.ValueBool() {
-		notificationOptions = append(notificationOptions, "BACKUP_SUCCESS")
+		notificationTriggers = append(notificationTriggers, "BACKUP_SUCCESS")
 	}
 	if data.SendNotificationsOnBackupFailure.ValueBool() {
-		notificationOptions = append(notificationOptions, "BACKUP_FAILED")
+		notificationTriggers = append(notificationTriggers, "BACKUP_FAILED")
 	}
 
-	body := map[string]any{
-		"backupInterval": map[string]any{
-			"cronExpression": data.CronExpression.ValueString(),
-			"dayOfMonth":     data.DayOfMonth.ValueInt32(),
-			"type":           data.Interval.ValueString(),
-			"weekday":        data.Weekday.ValueInt32(),
-			"timeOfDay":      data.TimeOfDay.ValueString(),
-		},
-		"databaseId":          data.DatabaseId.ValueString(),
-		"encryption":          ternary(data.Encryption.ValueBool(), "ENCRYPTED", "NONE"),
-		"isBackupsEnabled":    data.Enabled.ValueBool(),
-		"isRetryIfFailed":     ternary(data.MaxFailedRetryCount.ValueInt32() > 0, true, false),
-		"maxFailedTriesCount": data.MaxFailedRetryCount.ValueInt32(),
-		"retentionCount":      data.RetentionCount.ValueInt32(),
-		"retentionGfsDays":    data.RetentionGfsDays.ValueInt32(),
-		"retentionGfsHours":   data.RetentionGfsHours.ValueInt32(),
-		"retentionGfsMonths":  data.RetentionGfsMonths.ValueInt32(),
-		"retentionGfsWeeks":   data.RetentionGfsWeeks.ValueInt32(),
-		"retentionGfsYears":   data.RetentionGfsYears.ValueInt32(),
-		"retentionPolicyType": data.RetentionPolicyType.ValueString(),
-		"retentionTimePeriod": data.RetentionTimePeriod.ValueString(),
-		"sendNotificationsOn": notificationOptions,
-		"storage": map[string]any{
-			"id": data.StorageId.ValueString(),
+	return map[string]any{
+		"isBackupsEnabled": data.Enabled.ValueBool(),
+		"storageId":        data.StorageId.ValueString(),
+		"encryption":       encryptionValue(data.Encryption.ValueBool()),
+		"settings": map[string]any{
+			"type": "LOGICAL",
+			"schedule": map[string]any{
+				"type":           data.Interval.ValueString(),
+				"timeOfDay":      data.TimeOfDay.ValueString(),
+				"weekday":        data.Weekday.ValueInt32(),
+				"dayOfMonth":     data.DayOfMonth.ValueInt32(),
+				"cronExpression": data.CronExpression.ValueString(),
+			},
+			"retention": map[string]any{
+				"policy":    data.RetentionPolicyType.ValueString(),
+				"period":    data.RetentionTimePeriod.ValueString(),
+				"count":     data.RetentionCount.ValueInt32(),
+				"gfsHours":  data.RetentionGfsHours.ValueInt32(),
+				"gfsDays":   data.RetentionGfsDays.ValueInt32(),
+				"gfsWeeks":  data.RetentionGfsWeeks.ValueInt32(),
+				"gfsMonths": data.RetentionGfsMonths.ValueInt32(),
+				"gfsYears":  data.RetentionGfsYears.ValueInt32(),
+			},
+			"isRetryIfFailed":      data.MaxFailedRetryCount.ValueInt32() > 0,
+			"maxFailedTriesCount":  data.MaxFailedRetryCount.ValueInt32(),
+			"notificationTriggers": notificationTriggers,
 		},
 	}
-	return body
+}
+
+func encryptionValue(enabled bool) string {
+	if enabled {
+		return "ENCRYPTED"
+	}
+	return "NONE"
 }
 
 func (c *DatabasusClient) CreateBackupConfig(ctx context.Context, data BackupConfigResourceModel) (*BackupConfigResponseModel, error) {
-	var result BackupConfigResponseModel
-	body := marshallBackupConfigResourceModel(data)
+	return c.saveBackupConfig(ctx, data)
+}
 
-	b, _ := json.Marshal(body)
-	err := c.doRequest(ctx, "POST", "/backup-configs/save", bytes.NewBuffer(b), &result)
+func (c *DatabasusClient) saveBackupConfig(ctx context.Context, data BackupConfigResourceModel) (*BackupConfigResponseModel, error) {
+	var result BackupConfigResponseModel
+	body, err := json.Marshal(marshallBackupConfigResourceModel(data))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("marshal backup config: %w", err)
 	}
 
+	path := "/backup-configs/" + data.DatabaseId.ValueString()
+	if err := c.doRequest(ctx, "PUT", path, bytes.NewBuffer(body), &result); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 
-func (c *DatabasusClient) GetBackupConfig(ctx context.Context, databaseId string) (resultModel *BackupConfigResponseModel, errorD *ErrorDetails) {
+func (c *DatabasusClient) GetBackupConfig(ctx context.Context, databaseID string) (*BackupConfigResponseModel, *ErrorDetails) {
 	var result BackupConfigResponseModel
-
-	err := c.doRequest(ctx, "GET", "/backup-configs/database/"+databaseId, nil, &result)
-	if err != nil {
+	path := "/backup-configs/" + databaseID
+	if err := c.doRequest(ctx, "GET", path, nil, &result); err != nil {
 		return nil, err
 	}
-
 	return &result, nil
 }
 
 func (c *DatabasusClient) UpdateBackupConfig(ctx context.Context, data BackupConfigResourceModel) (*BackupConfigResponseModel, error) {
-	// API provides only a single endpoint for create and update
-	return c.CreateBackupConfig(ctx, data)
+	return c.saveBackupConfig(ctx, data)
 }
 
-// Delete is not possible for backup configs, can only set to false, but need to use update then.
+// Backup configs have no delete endpoint; removing the Terraform resource does not delete the server config.
 func (c *DatabasusClient) DeleteBackupConfig(ctx context.Context) error {
 	return nil
 }

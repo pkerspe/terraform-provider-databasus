@@ -21,15 +21,17 @@ type StorageS3ResourceModel struct {
 	S3Endpoint              types.String `tfsdk:"s3_endpoint"`
 	S3Prefix                types.String `tfsdk:"s3_prefix"`
 	S3Region                types.String `tfsdk:"s3_region"`
-	S3SecretKey             types.String `tfsdk:"s3_secret_key"`
-	S3StorageClass          types.String `tfsdk:"s3_storage_class"`
+	S3SecretKey              types.String `tfsdk:"s3_secret_key"`
+	S3StorageClass           types.String `tfsdk:"s3_storage_class"`
 	S3UseVirtualHostedStyle types.Bool   `tfsdk:"s3_use_virtual_hosted_style"`
-	SkipTLSVerify           types.Bool   `tfsdk:"skip_tls_verify"`
-	StorageId               types.String `tfsdk:"storage_id"`
+	SkipTLSVerify            types.Bool   `tfsdk:"skip_tls_verify"`
+	StorageId                types.String `tfsdk:"storage_id"`
 }
 
 func MapResponseToStorageS3ResourceModel(response *StorageS3ResponseModel, data *StorageS3ResourceModel) {
 	data.Id = types.StringValue(response.Id)
+	// The current API identifies the storage by the top-level ID; the legacy computed attribute mirrors it.
+	data.StorageId = types.StringValue(response.Id)
 	data.Name = types.StringValue(response.Name)
 	data.WorkspaceId = types.StringValue(response.WorkspaceId)
 	data.LastSaveError = types.StringValue(response.LastSaveError)
@@ -81,8 +83,11 @@ func marshallStorageS3ResourceModel(data StorageS3ResourceModel) map[string]any 
 
 func (c *DatabasusClient) CreateStorageS3(ctx context.Context, data StorageS3ResourceModel) (*StorageS3ResponseModel, error) {
 	var result StorageS3ResponseModel
-	b, _ := json.Marshal(marshallStorageS3ResourceModel(data))
-	if err := c.doRequest(ctx, "POST", "/storages", bytes.NewBuffer(b), &result); err != nil {
+	body, err := json.Marshal(marshallStorageS3ResourceModel(data))
+	if err != nil {
+		return nil, err
+	}
+	if err := c.doRequest(ctx, "POST", "/storages", bytes.NewBuffer(body), &result); err != nil {
 		return nil, err
 	}
 	return &result, nil
@@ -100,8 +105,11 @@ func (c *DatabasusClient) UpdateStorageS3(ctx context.Context, id string, data S
 	var result StorageS3ResponseModel
 	body := marshallStorageS3ResourceModel(data)
 	delete(body, "workspaceId")
-	b, _ := json.Marshal(body)
-	if err := c.doRequest(ctx, "PUT", "/storages/"+id, bytes.NewBuffer(b), &result); err != nil {
+	encodedBody, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.doRequest(ctx, "PUT", "/storages/"+id, bytes.NewBuffer(encodedBody), &result); err != nil {
 		return nil, err
 	}
 	return &result, nil
