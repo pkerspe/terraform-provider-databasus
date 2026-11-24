@@ -33,20 +33,20 @@ func MapResponseToNotifierWebhookResourceModel(ctx context.Context, response *No
 }
 
 type NotifierWebhookResponseModel struct {
-	Id            string                            `json:"id"`
-	Name          string                            `json:"name"`
-	WorkspaceId   string                            `json:"workspaceId"`
+	Id            string                              `json:"id"`
+	Name          string                              `json:"name"`
+	WorkspaceId   string                              `json:"workspaceId"`
 	Settings      NotifierWebhookDetailsResponseModel `json:"settings"`
-	LastSaveError string                            `json:"lastSaveError"`
+	LastSaveError string                              `json:"lastSaveError"`
 }
 
 type NotifierWebhookDetailsResponseModel struct {
-	Type               string                    `json:"type"`
-	Headers            []NotifierWebhookHeader   `json:"headers"`
-	BodyTemplate       string                    `json:"bodyTemplate"`
-	WebhookMethod      string                    `json:"webhookMethod"`
-	WebhookUrl         string                    `json:"webhookUrl"`
-	AcceptedCategories []string                  `json:"acceptedCategories"`
+	Type               string                  `json:"type"`
+	Headers            []NotifierWebhookHeader `json:"headers"`
+	BodyTemplate       string                  `json:"bodyTemplate"`
+	WebhookMethod      string                  `json:"webhookMethod"`
+	WebhookUrl         string                  `json:"webhookUrl"`
+	AcceptedCategories []string                `json:"acceptedCategories"`
 }
 
 type NotifierWebhookHeader struct {
