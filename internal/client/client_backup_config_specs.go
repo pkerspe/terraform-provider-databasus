@@ -75,12 +75,12 @@ type BackupConfigResponseModel struct {
 }
 
 type LogicalBackupSettingsResponse struct {
-	Type                  string                    `json:"type"`
-	Schedule              BackupScheduleResponse    `json:"schedule"`
-	Retention             LogicalRetentionResponse  `json:"retention"`
-	IsRetryIfFailed       bool                      `json:"isRetryIfFailed"`
-	MaxFailedTriesCount   int32                     `json:"maxFailedTriesCount"`
-	NotificationTriggers  []string                  `json:"notificationTriggers"`
+	Type                 string                   `json:"type"`
+	Schedule             BackupScheduleResponse   `json:"schedule"`
+	Retention            LogicalRetentionResponse `json:"retention"`
+	IsRetryIfFailed      bool                     `json:"isRetryIfFailed"`
+	MaxFailedTriesCount  int32                    `json:"maxFailedTriesCount"`
+	NotificationTriggers []string                 `json:"notificationTriggers"`
 }
 
 type BackupScheduleResponse struct {

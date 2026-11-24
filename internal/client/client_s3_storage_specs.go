@@ -21,11 +21,11 @@ type StorageS3ResourceModel struct {
 	S3Endpoint              types.String `tfsdk:"s3_endpoint"`
 	S3Prefix                types.String `tfsdk:"s3_prefix"`
 	S3Region                types.String `tfsdk:"s3_region"`
-	S3SecretKey              types.String `tfsdk:"s3_secret_key"`
-	S3StorageClass           types.String `tfsdk:"s3_storage_class"`
+	S3SecretKey             types.String `tfsdk:"s3_secret_key"`
+	S3StorageClass          types.String `tfsdk:"s3_storage_class"`
 	S3UseVirtualHostedStyle types.Bool   `tfsdk:"s3_use_virtual_hosted_style"`
-	SkipTLSVerify            types.Bool   `tfsdk:"skip_tls_verify"`
-	StorageId                types.String `tfsdk:"storage_id"`
+	SkipTLSVerify           types.Bool   `tfsdk:"skip_tls_verify"`
+	StorageId               types.String `tfsdk:"storage_id"`
 }
 
 func MapResponseToStorageS3ResourceModel(response *StorageS3ResponseModel, data *StorageS3ResourceModel) {
