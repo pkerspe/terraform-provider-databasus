@@ -16,7 +16,7 @@ type NotifierWebhookResourceModel struct {
 	Name          types.String `tfsdk:"name"`
 	WorkspaceId   types.String `tfsdk:"workspace_id"`
 	BodyTemplate  types.String `tfsdk:"body_template"`
-	Headers       types.Map `tfsdk:"headers"`
+	Headers       types.Map    `tfsdk:"headers"`
 	WebhookMethod types.String `tfsdk:"webhook_method"`
 	WebhookUrl    types.String `tfsdk:"webhook_url"`
 	LastSaveError types.String `tfsdk:"last_save_error"`
@@ -33,20 +33,20 @@ func MapResponseToNotifierWebhookResourceModel(ctx context.Context, response *No
 }
 
 type NotifierWebhookResponseModel struct {
-	Id            string `json:"id"`
-	Name          string `json:"name"`
-	WorkspaceId   string `json:"workspaceId"`
+	Id            string                              `json:"id"`
+	Name          string                              `json:"name"`
+	WorkspaceId   string                              `json:"workspaceId"`
 	Settings      NotifierWebhookDetailsResponseModel `json:"settings"`
-	LastSaveError string `json:"lastSaveError"`
+	LastSaveError string                              `json:"lastSaveError"`
 }
 
 type NotifierWebhookDetailsResponseModel struct {
-	Type               string `json:"type"`
+	Type               string                  `json:"type"`
 	Headers            []NotifierWebhookHeader `json:"headers"`
-	BodyTemplate       string `json:"bodyTemplate"`
-	WebhookMethod      string `json:"webhookMethod"`
-	WebhookUrl         string `json:"webhookUrl"`
-	AcceptedCategories []string `json:"acceptedCategories"`
+	BodyTemplate       string                  `json:"bodyTemplate"`
+	WebhookMethod      string                  `json:"webhookMethod"`
+	WebhookUrl         string                  `json:"webhookUrl"`
+	AcceptedCategories []string                `json:"acceptedCategories"`
 }
 
 type NotifierWebhookHeader struct {
@@ -64,14 +64,14 @@ func marshallNotifierWebhookResourceModel(ctx context.Context, data NotifierWebh
 		headerList = append(headerList, map[string]string{"name": name, "value": value})
 	}
 	return map[string]any{
-		"name": data.Name.ValueString(),
+		"name":        data.Name.ValueString(),
 		"workspaceId": data.WorkspaceId.ValueString(),
 		"settings": map[string]any{
-			"type": "WEBHOOK",
-			"webhookUrl": data.WebhookUrl.ValueString(),
-			"webhookMethod": data.WebhookMethod.ValueString(),
-			"headers": headerList,
-			"bodyTemplate": data.BodyTemplate.ValueString(),
+			"type":               "WEBHOOK",
+			"webhookUrl":         data.WebhookUrl.ValueString(),
+			"webhookMethod":      data.WebhookMethod.ValueString(),
+			"headers":            headerList,
+			"bodyTemplate":       data.BodyTemplate.ValueString(),
 			"acceptedCategories": []string{"ALL"},
 		},
 	}
@@ -80,13 +80,17 @@ func marshallNotifierWebhookResourceModel(ctx context.Context, data NotifierWebh
 func (c *DatabasusClient) CreateNotifierWebhook(ctx context.Context, data NotifierWebhookResourceModel) (*NotifierWebhookResponseModel, error) {
 	var result NotifierWebhookResponseModel
 	b, _ := json.Marshal(marshallNotifierWebhookResourceModel(ctx, data))
-	if err := c.doRequest(ctx, "POST", "/notifiers", bytes.NewBuffer(b), &result); err != nil { return nil, err }
+	if err := c.doRequest(ctx, "POST", "/notifiers", bytes.NewBuffer(b), &result); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 
 func (c *DatabasusClient) GetNotifierWebhook(ctx context.Context, id string) (*NotifierWebhookResponseModel, *ErrorDetails) {
 	var result NotifierWebhookResponseModel
-	if err := c.doRequest(ctx, "GET", "/notifiers/"+id, nil, &result); err != nil { return nil, err }
+	if err := c.doRequest(ctx, "GET", "/notifiers/"+id, nil, &result); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 
@@ -95,7 +99,9 @@ func (c *DatabasusClient) UpdateNotifierWebhook(ctx context.Context, id string, 
 	body := marshallNotifierWebhookResourceModel(ctx, data)
 	delete(body, "workspaceId")
 	b, _ := json.Marshal(body)
-	if err := c.doRequest(ctx, "PUT", "/notifiers/"+id, bytes.NewBuffer(b), &result); err != nil { return nil, err }
+	if err := c.doRequest(ctx, "PUT", "/notifiers/"+id, bytes.NewBuffer(b), &result); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 

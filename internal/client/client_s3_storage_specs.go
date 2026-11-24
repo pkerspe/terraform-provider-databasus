@@ -23,8 +23,8 @@ type StorageS3ResourceModel struct {
 	S3Region                types.String `tfsdk:"s3_region"`
 	S3SecretKey             types.String `tfsdk:"s3_secret_key"`
 	S3StorageClass          types.String `tfsdk:"s3_storage_class"`
-	S3UseVirtualHostedStyle types.Bool `tfsdk:"s3_use_virtual_hosted_style"`
-	SkipTLSVerify           types.Bool `tfsdk:"skip_tls_verify"`
+	S3UseVirtualHostedStyle types.Bool   `tfsdk:"s3_use_virtual_hosted_style"`
+	SkipTLSVerify           types.Bool   `tfsdk:"skip_tls_verify"`
 	StorageId               types.String `tfsdk:"storage_id"`
 }
 
@@ -43,11 +43,11 @@ func MapResponseToStorageS3ResourceModel(response *StorageS3ResponseModel, data 
 }
 
 type StorageS3ResponseModel struct {
-	Id            string `json:"id"`
-	Name          string `json:"name"`
-	WorkspaceId   string `json:"workspaceId"`
+	Id            string                        `json:"id"`
+	Name          string                        `json:"name"`
+	WorkspaceId   string                        `json:"workspaceId"`
 	Settings      StorageS3DetailsResponseModel `json:"settings"`
-	LastSaveError string `json:"lastSaveError"`
+	LastSaveError string                        `json:"lastSaveError"`
 }
 
 type StorageS3DetailsResponseModel struct {
@@ -59,22 +59,22 @@ type StorageS3DetailsResponseModel struct {
 	S3Region             string `json:"s3Region"`
 	S3SecretKey          string `json:"s3SecretKey"`
 	S3StorageClass       string `json:"s3StorageClass"`
-	IsVirtualHostedStyle bool `json:"isVirtualHostedStyle"`
-	IsSkipTlsVerify      bool `json:"isSkipTlsVerify"`
+	IsVirtualHostedStyle bool   `json:"isVirtualHostedStyle"`
+	IsSkipTlsVerify      bool   `json:"isSkipTlsVerify"`
 }
 
 func marshallStorageS3ResourceModel(data StorageS3ResourceModel) map[string]any {
 	settings := map[string]any{
-		"type": "S3",
-		"s3AccessKey": data.S3AccessKey.ValueString(),
-		"s3Bucket": data.S3Bucket.ValueString(),
-		"s3Endpoint": data.S3Endpoint.ValueString(),
-		"s3Prefix": data.S3Prefix.ValueString(),
-		"s3Region": data.S3Region.ValueString(),
-		"s3SecretKey": data.S3SecretKey.ValueString(),
-		"s3StorageClass": data.S3StorageClass.ValueString(),
+		"type":                 "S3",
+		"s3AccessKey":          data.S3AccessKey.ValueString(),
+		"s3Bucket":             data.S3Bucket.ValueString(),
+		"s3Endpoint":           data.S3Endpoint.ValueString(),
+		"s3Prefix":             data.S3Prefix.ValueString(),
+		"s3Region":             data.S3Region.ValueString(),
+		"s3SecretKey":          data.S3SecretKey.ValueString(),
+		"s3StorageClass":       data.S3StorageClass.ValueString(),
 		"isVirtualHostedStyle": data.S3UseVirtualHostedStyle.ValueBool(),
-		"isSkipTlsVerify": data.SkipTLSVerify.ValueBool(),
+		"isSkipTlsVerify":      data.SkipTLSVerify.ValueBool(),
 	}
 	return map[string]any{"name": data.Name.ValueString(), "workspaceId": data.WorkspaceId.ValueString(), "settings": settings}
 }
@@ -82,13 +82,17 @@ func marshallStorageS3ResourceModel(data StorageS3ResourceModel) map[string]any 
 func (c *DatabasusClient) CreateStorageS3(ctx context.Context, data StorageS3ResourceModel) (*StorageS3ResponseModel, error) {
 	var result StorageS3ResponseModel
 	b, _ := json.Marshal(marshallStorageS3ResourceModel(data))
-	if err := c.doRequest(ctx, "POST", "/storages", bytes.NewBuffer(b), &result); err != nil { return nil, err }
+	if err := c.doRequest(ctx, "POST", "/storages", bytes.NewBuffer(b), &result); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 
 func (c *DatabasusClient) GetStorageS3(ctx context.Context, id string) (*StorageS3ResponseModel, *ErrorDetails) {
 	var result StorageS3ResponseModel
-	if err := c.doRequest(ctx, "GET", "/storages/"+id, nil, &result); err != nil { return nil, err }
+	if err := c.doRequest(ctx, "GET", "/storages/"+id, nil, &result); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 
@@ -97,7 +101,9 @@ func (c *DatabasusClient) UpdateStorageS3(ctx context.Context, id string, data S
 	body := marshallStorageS3ResourceModel(data)
 	delete(body, "workspaceId")
 	b, _ := json.Marshal(body)
-	if err := c.doRequest(ctx, "PUT", "/storages/"+id, bytes.NewBuffer(b), &result); err != nil { return nil, err }
+	if err := c.doRequest(ctx, "PUT", "/storages/"+id, bytes.NewBuffer(b), &result); err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 
