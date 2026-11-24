@@ -73,6 +73,6 @@ func (c *DatabasusClient) UpdateStorageLocal(ctx context.Context, id string, dat
 	return &result, nil
 }
 
-func (c *DatabasusClient) DeleteStorageLocal(ctx context.Context, id string) error {
+func (c *DatabasusClient) DeleteStorageLocal(ctx context.Context, id string) *ErrorDetails {
 	return c.doRequest(ctx, "DELETE", "/storages/"+id, nil, nil)
 }
