@@ -30,7 +30,7 @@ type StorageLocalResponseModel struct {
 	Name          string                           `json:"name"`
 	WorkspaceId   string                           `json:"workspaceId"`
 	Settings      StorageLocalDetailsResponseModel `json:"settings"`
-	LastSaveError string                           `json:"lastSaveError"`
+	LastSaveError string                           `json:"last_save_error"`
 }
 
 type StorageLocalDetailsResponseModel struct {
