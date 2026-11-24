@@ -107,6 +107,6 @@ func (c *DatabasusClient) UpdateStorageS3(ctx context.Context, id string, data S
 	return &result, nil
 }
 
-func (c *DatabasusClient) DeleteStorageS3(ctx context.Context, id string) error {
+func (c *DatabasusClient) DeleteStorageS3(ctx context.Context, id string) *ErrorDetails {
 	return c.doRequest(ctx, "DELETE", "/storages/"+id, nil, nil)
 }
