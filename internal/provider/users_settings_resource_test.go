@@ -37,14 +37,14 @@ resource "databasus_users_settings" "test" {
   allow_external_registrations        = true
   allow_member_invitations            = true
   member_allowed_to_create_workspaces = true
-  two_factor_requirement              = "EMAIL"
+  two_factor_requirement              = "OFF"
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("databasus_users_settings.test", "allow_external_registrations", "true"),
 					resource.TestCheckResourceAttr("databasus_users_settings.test", "allow_member_invitations", "true"),
 					resource.TestCheckResourceAttr("databasus_users_settings.test", "member_allowed_to_create_workspaces", "true"),
-					resource.TestCheckResourceAttr("databasus_users_settings.test", "two_factor_requirement", "EMAIL"),
+					resource.TestCheckResourceAttr("databasus_users_settings.test", "two_factor_requirement", "OFF"),
 				),
 			},
 		},
