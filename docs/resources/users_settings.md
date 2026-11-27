@@ -28,6 +28,7 @@ resource "databasus_users_settings" "mySettings" {
 - `allow_external_registrations` (Boolean) When enabled, new users can register accounts in Databasus. If disabled, new users can only register via invitation
 - `allow_member_invitations` (Boolean) When enabled, existing members can invite new users to join Databasus. If not - only admins can invite users.
 - `member_allowed_to_create_workspaces` (Boolean) When enabled, members (non-admin users) can create new workspaces. If not - only admins can create workspaces.
+- `two_factor_requirement` (String) The two factor requirement for users. Possible values: 'OFF', 'EMAIL', 'AUTHENTICATOR_APP'
 
 ### Read-Only
 

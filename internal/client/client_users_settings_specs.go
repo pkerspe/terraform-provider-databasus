@@ -18,6 +18,7 @@ type SettingsResponseModel struct {
 	IsMemberAllowedToCreateWorkspaces bool   `json:"isMemberAllowedToCreateWorkspaces"`
 	IsTwoFactorAuthRequired           bool   `json:"isTwoFactorAuthRequired"`
 	IsEmailConfigured                 bool   `json:"isEmailConfigured"`
+	TwoFactorRequirement              string `json:"twoFactorRequirement"`
 }
 
 type SettingsDataSourceModel struct {
@@ -25,6 +26,7 @@ type SettingsDataSourceModel struct {
 	IsAllowExternalRegistrations      types.Bool   `tfsdk:"allow_external_registrations"`
 	IsAllowMemberInvitations          types.Bool   `tfsdk:"allow_member_invitations"`
 	IsMemberAllowedToCreateWorkspaces types.Bool   `tfsdk:"member_allowed_to_create_workspaces"`
+	TwoFactorRequirement              types.String `tfsdk:"two_factor_requirement"`
 }
 
 type SettingsResourceModel struct {
@@ -32,10 +34,11 @@ type SettingsResourceModel struct {
 	IsAllowExternalRegistrations      types.Bool   `tfsdk:"allow_external_registrations"`
 	IsAllowMemberInvitations          types.Bool   `tfsdk:"allow_member_invitations"`
 	IsMemberAllowedToCreateWorkspaces types.Bool   `tfsdk:"member_allowed_to_create_workspaces"`
+	TwoFactorRequirement              types.String `tfsdk:"two_factor_requirement"`
 }
 
-func (c *DatabasusClient) CreateUsersSettings(ctx context.Context, allowExternalRegistrations bool, allowMemberInvitations bool, memberAllowedToCreateWorkspaces bool) (*SettingsResponseModel, error) {
-	return c.UpdateUsersSettings(ctx, "", allowExternalRegistrations, allowMemberInvitations, memberAllowedToCreateWorkspaces)
+func (c *DatabasusClient) CreateUsersSettings(ctx context.Context, allowExternalRegistrations bool, allowMemberInvitations bool, memberAllowedToCreateWorkspaces bool, twoFactorRequirement string) (*SettingsResponseModel, error) {
+	return c.UpdateUsersSettings(ctx, "", allowExternalRegistrations, allowMemberInvitations, memberAllowedToCreateWorkspaces, twoFactorRequirement)
 }
 
 func (c *DatabasusClient) GetUsersSettings(ctx context.Context) (*SettingsResponseModel, *ErrorDetails) {
@@ -46,7 +49,7 @@ func (c *DatabasusClient) GetUsersSettings(ctx context.Context) (*SettingsRespon
 	return &result, nil
 }
 
-func (c *DatabasusClient) UpdateUsersSettings(ctx context.Context, _ string, allowExternalRegistrations bool, allowMemberInvitations bool, memberAllowedToCreateWorkspaces bool) (*SettingsResponseModel, error) {
+func (c *DatabasusClient) UpdateUsersSettings(ctx context.Context, _ string, allowExternalRegistrations bool, allowMemberInvitations bool, memberAllowedToCreateWorkspaces bool, twoFactorRequirement string) (*SettingsResponseModel, error) {
 	current, err := c.GetUsersSettings(ctx)
 	if err != nil {
 		return nil, err
@@ -56,6 +59,7 @@ func (c *DatabasusClient) UpdateUsersSettings(ctx context.Context, _ string, all
 		"isAllowMemberInvitations":          allowMemberInvitations,
 		"isMemberAllowedToCreateWorkspaces": memberAllowedToCreateWorkspaces,
 		"isTwoFactorAuthRequired":           current.IsTwoFactorAuthRequired,
+		"twoFactorRequirement":              twoFactorRequirement,
 	}
 	b, _ := json.Marshal(body)
 	var result SettingsResponseModel

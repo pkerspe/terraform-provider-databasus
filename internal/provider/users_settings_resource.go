@@ -53,6 +53,10 @@ func (r *UsersSettingsResource) Schema(ctx context.Context, req resource.SchemaR
 				MarkdownDescription: "When enabled, members (non-admin users) can create new workspaces. If not - only admins can create workspaces.",
 				Required:            true,
 			},
+			"two_factor_requirement": schema.StringAttribute{
+				MarkdownDescription: "The two factor requirement for users. Possible values: 'OFF', 'EMAIL', 'AUTHENTICATOR_APP'",
+				Required:            true,
+			},
 		},
 	}
 }
@@ -89,7 +93,8 @@ func (r *UsersSettingsResource) Create(ctx context.Context, req resource.CreateR
 	usersSettings, err := r.client.CreateUsersSettings(ctx,
 		plan.IsAllowExternalRegistrations.ValueBool(),
 		plan.IsAllowMemberInvitations.ValueBool(),
-		plan.IsMemberAllowedToCreateWorkspaces.ValueBool())
+		plan.IsMemberAllowedToCreateWorkspaces.ValueBool(),
+		plan.TwoFactorRequirement.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating users settings",
@@ -103,6 +108,7 @@ func (r *UsersSettingsResource) Create(ctx context.Context, req resource.CreateR
 	plan.IsAllowExternalRegistrations = types.BoolValue(usersSettings.IsAllowExternalRegistrations)
 	plan.IsAllowMemberInvitations = types.BoolValue(usersSettings.IsAllowMemberInvitations)
 	plan.IsMemberAllowedToCreateWorkspaces = types.BoolValue(usersSettings.IsMemberAllowedToCreateWorkspaces)
+	plan.TwoFactorRequirement = types.StringValue(usersSettings.TwoFactorRequirement)
 
 	tflog.Trace(ctx, "created new users settings resource")
 
@@ -155,7 +161,9 @@ func (r *UsersSettingsResource) Update(ctx context.Context, req resource.UpdateR
 		data.Id.ValueString(),
 		data.IsAllowExternalRegistrations.ValueBool(),
 		data.IsAllowMemberInvitations.ValueBool(),
-		data.IsMemberAllowedToCreateWorkspaces.ValueBool())
+		data.IsMemberAllowedToCreateWorkspaces.ValueBool(),
+		data.TwoFactorRequirement.ValueString(),
+	)
 
 	if err != nil {
 		resp.Diagnostics.AddError(
