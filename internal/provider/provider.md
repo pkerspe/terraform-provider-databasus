@@ -16,8 +16,8 @@ Provider Support Map:
 | v0.1.x - v0.6.x  | v3.32.2                           |
 | v0.7.x - v0.8.0  | v3.40.0                           |
 | v0.8.1 - v0.8.x  | v3.42.0                           |
-| v0.9.0 - v0.9.x  | v3.45.0-v3.64.0                   |
-| v0.10.0 - v0.10.x| use for 3.56.x and above)         |
+| v0.9.0 - v0.9.x  | v3.45.0                           |
+| v0.10.0 - v0.10.x| v3.73.x                           |
 
 ## Getting Started
 
